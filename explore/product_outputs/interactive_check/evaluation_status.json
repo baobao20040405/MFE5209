@@ -1,0 +1,20 @@
+{
+  "strategy": "GMI-ADG",
+  "requested_start": "2026-07-01",
+  "requested_end": "2026-07-31",
+  "initial_capital_sgd": 10000.0,
+  "cost": "Fixed 0.05% one-way",
+  "status": "COMPLETED",
+  "actual_start": "2026-07-01",
+  "actual_end": "2026-07-31",
+  "observations": 23,
+  "output_dir": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\product_outputs\\interactive_check",
+  "charts": {
+    "cumulative_return": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\product_outputs\\interactive_check\\product_oos_cumulative_return.png",
+    "wealth": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\product_outputs\\interactive_check\\product_oos_wealth.png",
+    "drawdown": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\product_outputs\\interactive_check\\product_oos_drawdown.png",
+    "asset_class_weights": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\product_outputs\\interactive_check\\product_oos_asset_class_weights.png"
+  },
+  "interpretation": "Historical evaluation uses frozen current rules; dates alone do not establish untouched holdout evidence.",
+  "trade_definition": "Win rate, holding period and profit per trade use completed FIFO lot matches, including marked opening inventory. Open lots are excluded."
+}

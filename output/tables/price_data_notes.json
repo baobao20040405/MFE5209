@@ -1,0 +1,104 @@
+{
+  "source": "Yahoo Finance",
+  "asset_count": 18,
+  "start": "1990-01-02",
+  "end": "2026-10-15",
+  "coverage_check": "Every adjusted local observation must have a finite positive unadjusted close. SGD conversion is required from the strategy's common valuation start; earlier unavailable FX stays missing. Genuine local-market holidays remain missing.",
+  "sgd_required_from": "2014-09-17",
+  "per_asset_coverage": {
+    "SPY": {
+      "first_observation": "1993-01-29",
+      "last_observation": "2026-10-15",
+      "observations": 8486
+    },
+    "QQQ": {
+      "first_observation": "1999-03-10",
+      "last_observation": "2026-10-15",
+      "observations": 6944
+    },
+    "IWM": {
+      "first_observation": "2000-05-26",
+      "last_observation": "2026-10-15",
+      "observations": 6636
+    },
+    "EXS1.DE": {
+      "first_observation": "2008-01-02",
+      "last_observation": "2026-10-15",
+      "observations": 4771
+    },
+    "ISF.L": {
+      "first_observation": "2009-01-02",
+      "last_observation": "2026-10-15",
+      "observations": 4493
+    },
+    "1308.T": {
+      "first_observation": "2008-01-04",
+      "last_observation": "2026-10-15",
+      "observations": 4609
+    },
+    "510300.SS": {
+      "first_observation": "2012-05-04",
+      "last_observation": "2026-10-15",
+      "observations": 3495
+    },
+    "2800.HK": {
+      "first_observation": "2008-01-02",
+      "last_observation": "2026-10-15",
+      "observations": 4629
+    },
+    "ES3.SI": {
+      "first_observation": "2008-01-02",
+      "last_observation": "2026-10-15",
+      "observations": 4713
+    },
+    "IEF": {
+      "first_observation": "2002-07-30",
+      "last_observation": "2026-10-15",
+      "observations": 6093
+    },
+    "511010.SS": {
+      "first_observation": "2013-03-05",
+      "last_observation": "2026-10-15",
+      "observations": 3294
+    },
+    "USO": {
+      "first_observation": "2006-04-10",
+      "last_observation": "2026-10-15",
+      "observations": 5162
+    },
+    "DBB": {
+      "first_observation": "2007-01-05",
+      "last_observation": "2026-10-15",
+      "observations": 4976
+    },
+    "GLD": {
+      "first_observation": "2004-11-18",
+      "last_observation": "2026-10-15",
+      "observations": 5511
+    },
+    "UUP": {
+      "first_observation": "2007-03-01",
+      "last_observation": "2026-10-15",
+      "observations": 4939
+    },
+    "FXY": {
+      "first_observation": "2007-02-13",
+      "last_observation": "2026-10-15",
+      "observations": 4950
+    },
+    "FXE": {
+      "first_observation": "2005-12-12",
+      "last_observation": "2026-10-15",
+      "observations": 5243
+    },
+    "BTC-USD": {
+      "first_observation": "2014-09-17",
+      "last_observation": "2026-10-15",
+      "observations": 4412
+    }
+  },
+  "raw_close": "Unadjusted Close in each instrument's trading currency.",
+  "adjusted_close": "Yahoo auto_adjust=True Close, used for strategy returns.",
+  "missing_values": "Preserved on non-trading dates; no artificial price observations.",
+  "sgd_conversion": "Adjusted local close times pipeline FX to SGD; FX may be forward-filled up to 5 business days."
+}

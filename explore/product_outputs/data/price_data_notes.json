@@ -1,0 +1,10 @@
+{
+  "source": "Yahoo Finance",
+  "asset_count": 18,
+  "start": "1990-01-02",
+  "end": "2026-07-31",
+  "raw_close": "Unadjusted Close in each instrument's trading currency.",
+  "adjusted_close": "Yahoo auto_adjust=True Close, used for strategy returns.",
+  "missing_values": "Preserved on non-trading dates; no artificial price observations.",
+  "sgd_conversion": "Adjusted local close times pipeline FX to SGD; FX may be forward-filled up to 5 business days."
+}

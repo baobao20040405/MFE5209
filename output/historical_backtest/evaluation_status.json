@@ -1,0 +1,46 @@
+{
+  "strategy": "GMI-ADG",
+  "comparisons": [
+    "GMI-ADG",
+    "GMA-EW",
+    "VT",
+    "STI"
+  ],
+  "requested_start": "2015-09-07",
+  "requested_end": "2026-07-31",
+  "initial_capital_sgd": 1000000.0,
+  "cost": "Fixed 0.05% one-way",
+  "status": "COMPLETED",
+  "output_dir": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\historical_backtest",
+  "actual_start": "2015-09-07",
+  "actual_end": "2026-07-31",
+  "observations": 2837,
+  "charts": {
+    "growth": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\historical_backtest\\figures\\growth.png",
+    "wealth": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\historical_backtest\\figures\\wealth.png",
+    "drawdown": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\historical_backtest\\figures\\drawdown.png",
+    "allocation": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\historical_backtest\\figures\\allocation.png"
+  },
+  "source_sha256": {
+    "assets.py": "e85761f969083a245e3dc7a8e858a212ff8b667b94816a98ca59c7b038ad4497",
+    "backtest.py": "eddfedef993ba22f03cd3abf1efa78fe63dff9e98129cedd7b72ef99e1c734ee",
+    "config.py": "0a438946a94fb5cbb4e672d6551476b575f3a81eea59083b8774656b7bcfa866",
+    "data.py": "6b079fba2578ada19e135d67032b64c586328bd12ffde70f377b1474261845c2",
+    "download.py": "9ef9a311dc22acf9bf5a421c41e23881fe592410bdbff786784e6095efc28d78",
+    "evaluation.py": "597bf5d880d524a8afbfc1ad137f31ebf71f6f051bafeb74e2a5f48bcd8300d8",
+    "export.py": "5ca0b69d6e7750942c40c09bc0fe24e5aa01bec756b65849c267c09db1e51b50",
+    "main.py": "e0d96e1cf841e9f1d76d179712ce63f20c42f674fc933719461e7f145b3ad469",
+    "market_data.py": "73ecf7425c73b9ff8528052f0d7c4a7533232526af58f0b4a05998603d47e364",
+    "plots.py": "0872cac639fb3c3e31c8da533100ace29425d4ec2d73d29d407f5b0f7457d405",
+    "product_evaluation.py": "776224452034523badecda9ddc93a1fc6ca8a944fa913abe6dc240c92c94c77a",
+    "strategy.py": "76434ab8bdb87672383a8ed1aa6f3b9b48342969dd96f2a11a71c19bed11c99c",
+    "validation.py": "90fc760029e572031cb851d388c6455a9724894c362cf1fa0d79764c30b10e68"
+  },
+  "sora_publication_date": "2026-07-31",
+  "quote_coverage": "Historical research convention: isolated source gaps are carried forward for no more than 5 business days. This is not the strict observed-quote certification used by the formal out-of-sample evaluator. See observed_quote_coverage.csv.",
+  "interpretation": "Current fixed rules replay earlier holdings before the evaluation interval; historical windows inspected during research are not untouched holdout evidence.",
+  "benchmark_convention": "All series are SGD total-return proxies net of 0.05% executed-notional fees. VT/STI are buy-and-hold, entered at the next close after the first replay signal, with no forced final liquidation.",
+  "trade_definition": "FIFO units reconcile to post-fee NAV and closing weights. Recorded fees are allocated, not estimated twice. Win rate, holding period and profit per trade exclude fee-funding-only sales and open lots. Opening holdings are marked at the evaluation boundary. No ordinary closed trades means unavailable, not zero win rate.",
+  "sora_convention": "Latest prior-value-date SORA published by return date; annual percent / 100 * actual calendar gap / 365. Publication availability improves holiday alignment relative to research shift/reindex.",
+  "historical_quote_warning": "Observed quote coverage is incomplete; forward-filled prices cannot establish completion. Refresh market data. EXS1.DE Close: 1 missing/invalid session(s), e.g. 2025-10-24; ISF.L Close: 1 missing/invalid session(s), e.g. 2025-10-24; 1308.T Close: 1 missing/invalid session(s), e.g. 2025-10-24; 510300.SS Close: 3 missing/invalid session(s), e.g. 2019-04-29; 2800.HK Close: 3 missing/invalid session(s), e.g. 2023-09-01; ES3.SI Close: 1 missing/invalid session(s), e.g. 2025-10-24; 511010.SS Close: 3 missing/invalid session(s), e.g. 2019-04-29; SGD=X Close: 3 missing/invalid session(s), e.g. 2017-07-11; EURSGD=X Close: 2 missing/invalid session(s), e.g. 2017-07-11; GBPSGD=X Close: 2 missing/invalid session(s), e.g. 2017-07-11; JPY=X Close: 3 missing/invalid session(s), e.g. 2017-07-11; CNY=X Close: 4 missing/invalid session(s), e.g. 2017-07-11; HKDSGD=X Close: 3 missing/invalid session(s), e.g. 2017-07-11"
+}

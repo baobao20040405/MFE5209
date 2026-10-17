@@ -1,0 +1,43 @@
+{
+  "strategy": "GMI-ADG",
+  "comparisons": [
+    "GMI-ADG",
+    "GMA-EW",
+    "VT",
+    "STI"
+  ],
+  "requested_start": "2026-07-01",
+  "requested_end": "2026-07-31",
+  "initial_capital_sgd": 10000.0,
+  "cost": "Fixed 0.05% one-way",
+  "status": "COMPLETED",
+  "output_dir": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\validation_july",
+  "actual_start": "2026-07-01",
+  "actual_end": "2026-07-31",
+  "observations": 23,
+  "charts": {
+    "growth": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\validation_july\\figures\\growth.png",
+    "wealth": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\validation_july\\figures\\wealth.png",
+    "drawdown": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\validation_july\\figures\\drawdown.png",
+    "allocation": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\validation_july\\figures\\allocation.png"
+  },
+  "source_sha256": {
+    "assets.py": "e85761f969083a245e3dc7a8e858a212ff8b667b94816a98ca59c7b038ad4497",
+    "backtest.py": "a7371bfce6f5df2b2ddb8df57aceb18e505c0d3b60832ff775c282d411923cfc",
+    "config.py": "0a438946a94fb5cbb4e672d6551476b575f3a81eea59083b8774656b7bcfa866",
+    "data.py": "6b079fba2578ada19e135d67032b64c586328bd12ffde70f377b1474261845c2",
+    "download.py": "9ef9a311dc22acf9bf5a421c41e23881fe592410bdbff786784e6095efc28d78",
+    "evaluation.py": "8183e1d7bf307f9e186ef26f1d216b5ecec7b1c019868bfae6fbde61f5abf4aa",
+    "export.py": "ac8c1ae0612b62e2c92e185d919c5f6c94a1fecddcd85399bd580c835922dbd6",
+    "main.py": "e0d96e1cf841e9f1d76d179712ce63f20c42f674fc933719461e7f145b3ad469",
+    "market_data.py": "bc3b291e0ffb0e2d5d0fc4d643eb76707e5d1b8b8730f070cead286a93c77702",
+    "plots.py": "0872cac639fb3c3e31c8da533100ace29425d4ec2d73d29d407f5b0f7457d405",
+    "product_evaluation.py": "cdaa47e0dbf900b927df3075afbf75cba10c7281bfc7509344ecfa5cab88a705",
+    "strategy.py": "9c0d36179c4b733f4a337d9f8d426b053b6d4457eef59b09a4369efcf4bd21f3"
+  },
+  "sora_publication_date": "2026-07-31",
+  "interpretation": "Current fixed rules replay earlier holdings before the evaluation interval; historical windows inspected during research are not untouched holdout evidence.",
+  "benchmark_convention": "All series are SGD total-return proxies net of 0.05% executed-notional fees. VT/STI are buy-and-hold, entered at the next close after the first replay signal, with no forced final liquidation.",
+  "trade_definition": "Win rate, holding period and profit per trade use completed FIFO matches. Opening holdings are marked at the evaluation boundary; open lots are excluded. No closed trades means unavailable, not zero win rate.",
+  "sora_convention": "Latest prior-value-date SORA published by return date; annual percent / 100 * actual calendar gap / 365. Publication availability improves holiday alignment relative to research shift/reindex."
+}

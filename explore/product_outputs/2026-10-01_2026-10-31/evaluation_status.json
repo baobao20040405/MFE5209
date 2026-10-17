@@ -1,0 +1,9 @@
+{
+  "strategy": "GMI-ADG",
+  "requested_start": "2026-10-01",
+  "requested_end": "2026-10-31",
+  "initial_capital_sgd": 10000.0,
+  "cost": "Fixed 0.05% one-way",
+  "status": "PENDING",
+  "reason": "Requested test period has not finished. Rerun after its end or explicitly allow partial results."
+}

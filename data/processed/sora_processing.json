@@ -1,0 +1,11 @@
+{
+  "source": "https://eservices.mas.gov.sg/statistics/dir/",
+  "raw_file": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\data\\raw\\raw sora.csv",
+  "observations": 4213,
+  "first_value_date": "2010-01-04",
+  "last_value_date": "2026-10-15",
+  "last_publication_date": "2026-10-16",
+  "unit": "Annual percentage; 1.50 means 1.50%, not 150%.",
+  "alignment": "Last observation published on or before the return date; never future-filled.",
+  "day_count": "Simple ACT/365 over each valuation interval. This is a daily cash-rate proxy, not the official compounded SORA Index."
+}

@@ -1,0 +1,21 @@
+"""The 18 original tradable assets."""
+asset_rows = [
+    ('Equities', 'United States', 'S&P 500', 'SPY', 'SPDR S&P 500 ETF Trust', 'USD'),
+    ('Equities', 'United States', 'NASDAQ 100', 'QQQ', 'Invesco QQQ Trust', 'USD'),
+    ('Equities', 'United States', 'Russell 2000', 'IWM', 'iShares Russell 2000 ETF', 'USD'),
+    ('Equities', 'Germany', 'DAX, Germany', 'EXS1.DE', 'iShares Core DAX UCITS ETF', 'EUR'),
+    ('Equities', 'United Kingdom', 'FTSE 100', 'ISF.L', 'iShares Core FTSE 100 UCITS ETF', 'GBP'),
+    ('Equities', 'Japan', 'TOPIX', '1308.T', 'Listed Index Fund TOPIX', 'JPY'),
+    ('Equities', 'China', 'CSI 300', '510300.SS', 'Huatai-PineBridge CSI 300 ETF', 'CNY'),
+    ('Equities', 'Hong Kong SAR', 'Hang Seng Index', '2800.HK', 'Tracker Fund of Hong Kong', 'HKD'),
+    ('Equities', 'Singapore', 'Straits Times Index', 'ES3.SI', 'SPDR Straits Times Index ETF', 'SGD'),
+    ('Bonds', 'United States', 'United States Treasury 7-10 years', 'IEF', 'iShares 7-10 Year Treasury Bond ETF', 'USD'),
+    ('Bonds', 'China', 'China 5-Year Government Bond', '511010.SS', 'Government Bond ETF', 'CNY'),
+    ('Commodities', 'Global', 'Energy (oil)', 'USO', 'United States Oil Fund', 'USD'),
+    ('Commodities', 'Global', 'Industrial metals', 'DBB', 'Invesco DB Base Metals Fund', 'USD'),
+    ('Commodities', 'Global', 'Gold', 'GLD', 'SPDR Gold Shares', 'USD'),
+    ('FX', 'United States', 'United States dollar index', 'UUP', 'Invesco DB US Dollar Index Bullish Fund', 'USD'),
+    ('FX', 'Japan', 'Japanese yen', 'FXY', 'Invesco CurrencyShares Japanese Yen Trust', 'USD'),
+    ('FX', 'Euro Area', 'Euro', 'FXE', 'Invesco CurrencyShares Euro Trust', 'USD'),
+    ('Crypto', 'Global', 'Bitcoin', 'BTC-USD', 'Bitcoin', 'USD'),
+]

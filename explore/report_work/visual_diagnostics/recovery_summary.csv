@@ -1,0 +1,10 @@
+﻿,Window,Policy,Window Start Day,Window End Day,Can not open message,Until the date of the transaction,Fix by end of window,Benchmark complete repair
+0,1,Global Momentum Adaptive Hierarchical Risk Budget (GMI-AHRB),2020-02-24,2020-11-05,-0.053015333790530694,22.0,True,True
+1,1,Global Momentum Fixed Offensive Allocation (GMI-FOA),2020-02-24,2020-11-05,-0.054366019236756435,117.0,True,True
+2,1,Global Momentum Adaptive Defense and Growth (GMI-ADG),2020-02-24,2020-11-05,-0.05170628398604726,22.0,True,True
+3,2,Global Momentum Adaptive Hierarchical Risk Budget (GMI-AHRB),2021-11-09,2024-03-04,-0.07411557158988025,585.0,True,True
+4,2,Global Momentum Fixed Offensive Allocation (GMI-FOA),2021-11-09,2024-03-04,-0.1180116200021345,591.0,True,True
+5,2,Global Momentum Adaptive Defense and Growth (GMI-ADG),2021-11-09,2024-03-04,-0.08382230678514058,543.0,True,True
+6,3,Global Momentum Adaptive Hierarchical Risk Budget (GMI-AHRB),2018-01-08,2019-05-15,-0.08732707362815328,,False,True
+7,3,Global Momentum Fixed Offensive Allocation (GMI-FOA),2018-01-08,2019-05-15,-0.15001774677427493,,False,True
+8,3,Global Momentum Adaptive Defense and Growth (GMI-ADG),2018-01-08,2019-05-15,-0.1384646033270669,,False,True

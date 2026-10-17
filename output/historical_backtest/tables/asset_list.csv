@@ -1,0 +1,19 @@
+Code,Asset Class,Market,Asset Name,ETF English Name,Local Currency
+SPY,Equities,United States,S&P 500,SPDR S&P 500 ETF Trust,USD
+QQQ,Equities,United States,NASDAQ 100,Invesco QQQ Trust,USD
+IWM,Equities,United States,Russell 2000,iShares Russell 2000 ETF,USD
+EXS1.DE,Equities,Germany,"DAX, Germany",iShares Core DAX UCITS ETF,EUR
+ISF.L,Equities,United Kingdom,FTSE 100,iShares Core FTSE 100 UCITS ETF,GBP
+1308.T,Equities,Japan,TOPIX,Listed Index Fund TOPIX,JPY
+510300.SS,Equities,China,CSI 300,Huatai-PineBridge CSI 300 ETF,CNY
+2800.HK,Equities,Hong Kong SAR,Hang Seng Index,Tracker Fund of Hong Kong,HKD
+ES3.SI,Equities,Singapore,Straits Times Index,SPDR Straits Times Index ETF,SGD
+IEF,Bonds,United States,United States Treasury 7-10 years,iShares 7-10 Year Treasury Bond ETF,USD
+511010.SS,Bonds,China,China 5-Year Government Bond,Government Bond ETF,CNY
+USO,Commodities,Global,Energy (oil),United States Oil Fund,USD
+DBB,Commodities,Global,Industrial metals,Invesco DB Base Metals Fund,USD
+GLD,Commodities,Global,Gold,SPDR Gold Shares,USD
+UUP,FX,United States,United States dollar index,Invesco DB US Dollar Index Bullish Fund,USD
+FXY,FX,Japan,Japanese yen,Invesco CurrencyShares Japanese Yen Trust,USD
+FXE,FX,Euro Area,Euro,Invesco CurrencyShares Euro Trust,USD
+BTC-USD,Crypto,Global,Bitcoin,Bitcoin,USD

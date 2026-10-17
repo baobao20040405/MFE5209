@@ -1,0 +1,16 @@
+{
+  "strategy": "GMI-ADG",
+  "comparisons": [
+    "GMI-ADG",
+    "GMA-EW",
+    "VT",
+    "STI"
+  ],
+  "requested_start": "2026-10-01",
+  "requested_end": "2026-10-31",
+  "initial_capital_sgd": 1000000.0,
+  "cost": "Fixed 0.05% one-way",
+  "status": "PENDING",
+  "output_dir": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output\\pending_check",
+  "reason": "Requested period is unfinished. Choose partial evaluation or run after the period ends."
+}
