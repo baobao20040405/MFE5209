@@ -107,7 +107,7 @@ def build_notebook() -> None:
         notebook.cells.append(nbformat.v4.new_markdown_cell(
             "## Part X. Final Product Evaluation and Course Data Export\n\n"
             "### 10.1 Historical validation and the October test\n\n"
-            "The final product is GMI-ADG. The planned formal evaluation is "
+            "The final product is GMI-ATC (GMI-ADG plus the 20-day trend confirmation of Section 3.3.1). The planned formal evaluation is "
             "2026-10-01 through 2026-10-31. Before the period finishes, the default "
             "evaluation returns PENDING. Historical validation can be reported "
             "separately, with its model-selection limitations disclosed. Update "

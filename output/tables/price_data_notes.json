@@ -2,99 +2,99 @@
   "source": "Yahoo Finance",
   "asset_count": 18,
   "start": "1990-01-02",
-  "end": "2026-10-15",
+  "end": "2026-10-19",
   "coverage_check": "Every adjusted local observation must have a finite positive unadjusted close. SGD conversion is required from the strategy's common valuation start; earlier unavailable FX stays missing. Genuine local-market holidays remain missing.",
   "sgd_required_from": "2014-09-17",
   "per_asset_coverage": {
     "SPY": {
       "first_observation": "1993-01-29",
-      "last_observation": "2026-10-15",
-      "observations": 8486
+      "last_observation": "2026-10-19",
+      "observations": 8488
     },
     "QQQ": {
       "first_observation": "1999-03-10",
-      "last_observation": "2026-10-15",
-      "observations": 6944
+      "last_observation": "2026-10-19",
+      "observations": 6946
     },
     "IWM": {
       "first_observation": "2000-05-26",
-      "last_observation": "2026-10-15",
-      "observations": 6636
+      "last_observation": "2026-10-19",
+      "observations": 6638
     },
     "EXS1.DE": {
       "first_observation": "2008-01-02",
-      "last_observation": "2026-10-15",
-      "observations": 4771
+      "last_observation": "2026-10-19",
+      "observations": 4773
     },
     "ISF.L": {
       "first_observation": "2009-01-02",
-      "last_observation": "2026-10-15",
-      "observations": 4493
+      "last_observation": "2026-10-19",
+      "observations": 4495
     },
     "1308.T": {
       "first_observation": "2008-01-04",
-      "last_observation": "2026-10-15",
-      "observations": 4609
+      "last_observation": "2026-10-19",
+      "observations": 4611
     },
     "510300.SS": {
       "first_observation": "2012-05-04",
-      "last_observation": "2026-10-15",
-      "observations": 3495
+      "last_observation": "2026-10-19",
+      "observations": 3497
     },
     "2800.HK": {
       "first_observation": "2008-01-02",
-      "last_observation": "2026-10-15",
-      "observations": 4629
+      "last_observation": "2026-10-16",
+      "observations": 4630
     },
     "ES3.SI": {
       "first_observation": "2008-01-02",
-      "last_observation": "2026-10-15",
-      "observations": 4713
+      "last_observation": "2026-10-19",
+      "observations": 4715
     },
     "IEF": {
       "first_observation": "2002-07-30",
-      "last_observation": "2026-10-15",
-      "observations": 6093
+      "last_observation": "2026-10-19",
+      "observations": 6095
     },
     "511010.SS": {
       "first_observation": "2013-03-05",
-      "last_observation": "2026-10-15",
-      "observations": 3294
+      "last_observation": "2026-10-19",
+      "observations": 3296
     },
     "USO": {
       "first_observation": "2006-04-10",
-      "last_observation": "2026-10-15",
-      "observations": 5162
+      "last_observation": "2026-10-19",
+      "observations": 5164
     },
     "DBB": {
       "first_observation": "2007-01-05",
-      "last_observation": "2026-10-15",
-      "observations": 4976
+      "last_observation": "2026-10-19",
+      "observations": 4978
     },
     "GLD": {
       "first_observation": "2004-11-18",
-      "last_observation": "2026-10-15",
-      "observations": 5511
+      "last_observation": "2026-10-19",
+      "observations": 5513
     },
     "UUP": {
       "first_observation": "2007-03-01",
-      "last_observation": "2026-10-15",
-      "observations": 4939
+      "last_observation": "2026-10-19",
+      "observations": 4941
     },
     "FXY": {
       "first_observation": "2007-02-13",
-      "last_observation": "2026-10-15",
-      "observations": 4950
+      "last_observation": "2026-10-19",
+      "observations": 4952
     },
     "FXE": {
       "first_observation": "2005-12-12",
-      "last_observation": "2026-10-15",
-      "observations": 5243
+      "last_observation": "2026-10-19",
+      "observations": 5245
     },
     "BTC-USD": {
       "first_observation": "2014-09-17",
-      "last_observation": "2026-10-15",
-      "observations": 4412
+      "last_observation": "2026-10-19",
+      "observations": 4416
     }
   },
   "raw_close": "Unadjusted Close in each instrument's trading currency.",

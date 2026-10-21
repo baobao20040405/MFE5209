@@ -1,10 +1,12 @@
 # MFE5209 Global Multi-Asset Adaptive Allocation
 
-## Global Momentum Adaptive Defense and Growth (GMI-ADG)
+## Global Momentum Adaptive Trend-Confirmed Allocation (GMI-ATC)
 
 This project develops an automatically updateable global multi-asset allocation system measured in Singapore dollars (SGD). It downloads ETF, Bitcoin, FX, VIX and benchmark data from Yahoo Finance, processes daily SORA published by the Monetary Authority of Singapore (MAS), and performs data validation, momentum selection, risk estimation, portfolio construction, delayed execution, cost accounting, performance evaluation, stress testing, robustness analysis and attribution.
 
-The submitted product is **Global Momentum Adaptive Defense and Growth (GMI-ADG)**. It selects the ten strongest assets from an 18-asset universe using 12-1 momentum, constructs a core portfolio with an EWMA covariance matrix and a fully adaptive two-level risk budget, and allocates 0%–30% to a diversified offensive sleeve according to trend breadth, volatility shocks, VIX conditions and realized drawdown.
+The submitted product is **Global Momentum Adaptive Trend-Confirmed Allocation (GMI-ATC)**. It selects the ten strongest assets from an 18-asset universe using 12-1 momentum, constructs a core portfolio with an EWMA covariance matrix and a fully adaptive two-level risk budget, and allocates 0%–30% to a diversified offensive sleeve according to trend breadth, volatility shocks, VIX conditions and realized drawdown. An asset may receive the offensive overlay only if it also closes above its own 20-day moving average on the signal date.
+
+GMI-ATC equals GMI-ADG (Global Momentum Adaptive Defense and Growth) plus that single 20-day trend-confirmation rule; GMI-ADG is the ablation that isolates the rule's contribution. The rule's window was selected on the full 2015–2026 research period under both cost scenarios (Section 3.3); it was introduced on 2026-10-21, so the October 2026 test is reported as an observation rather than independent out-of-sample evidence.
 
 The objective is not simply to maximize historical return. The model balances return, risk-adjusted performance, drawdown, turnover, global diversification and practical tradability. All results are historical research and do not constitute investment advice.
 
@@ -54,19 +56,21 @@ New weights earn returns only after execution. The signal-day return is never as
 ### 1.3 EWMA risk estimation
 
 ```text
-Sigma(t) = lambda * Sigma(t-1) + (1-lambda) * r(t-1)r(t-1)'
+w(s)     = lambda^(t-s) / sum_k lambda^(t-k),      s = t-251, ..., t
+mu       = sum_s w(s) r(s)
+Sigma(t) = 252 * sum_s w(s) (r(s)-mu)(r(s)-mu)' / (1 - sum_s w(s)^2)
 ```
 
-The frozen decay is `EWMA_LAMBDA = 0.94`. EWMA reacts to recent volatility and correlation changes, while matrix symmetrization and regularization improve solver stability. Sample covariance, downside second moments and GARCH(1,1) remain as research comparisons.
+The estimate uses the 252 daily SGD returns ending at the signal-date close, demeaned with the same weights and annualized by 252. The frozen decay is `EWMA_LAMBDA = 0.94`. EWMA reacts to recent volatility and correlation changes, while matrix symmetrization and regularization improve solver stability. Sample covariance, downside second moments and GARCH(1,1) remain as research comparisons.
 
 ### 1.4 Fully adaptive two-level risk budget
 
-Risk is allocated first across equities, bonds, commodities, FX and crypto, and then among securities within each class. Both levels use momentum rank and trend information:
+Risk is allocated first across equities, bonds, commodities, FX and crypto, and then among securities within each class. Both levels multiply a momentum-rank term by a trend term:
 
-- rank multiplier: `0.75 + 0.50 * rank percentile`;
-- positive six-month return and price above MA200: multiplier 1.50;
-- only one trend condition satisfied: multiplier 1.00; and
-- neither condition satisfied: multiplier 0.50.
+- rank multiplier (both levels): `0.75 + 0.50 * rank percentile` (class level ranks the class-average 12-1 momentum; security level ranks each asset's 12-1 momentum within its class);
+- class-level trend multiplier: 1.50 if at least 50% of the class's selected assets have a positive six-month return and trade above MA200, 1.00 if at least 25%, otherwise 0.50;
+- security-level trend multiplier: 1.50 if both conditions hold, 1.00 if only one holds, 0.50 if neither holds; and
+- the security budget is its class budget times its share of the class's multiplier products.
 
 The resulting target risk budget is solved against the EWMA covariance matrix. The budget defines desired risk shares; the covariance matrix estimates current risk. They are not interchangeable.
 
@@ -77,7 +81,7 @@ Final Weight = (1 - Offensive Share) * Adaptive EWMA Core Weight
              + Offensive Share * Diversified Offensive Weight
 ```
 
-Candidates must be in the Top 10, have positive six-month momentum, trade above MA200, and have 20-day volatility no greater than 1.5 times 126-day volatility.
+Candidates must be in the Top 10, have positive six-month momentum, trade above MA200, and have 20-day volatility no greater than 1.5 times 126-day volatility. **GMI-ATC** additionally requires the signal-date close to be above the asset's own 20-day moving average (`ATTACK_SHORT_MA = 20`, SGD price, closes up to and including the signal date). This extra rule is checked only on the 15-session review dates and changes only which assets receive the overlay; the trend breadth below, the offensive share and the core weights are computed from the first three conditions exactly as in GMI-ADG.
 
 | Qualified trend breadth | Base offensive share |
 |---:|---:|
@@ -129,7 +133,7 @@ config -> data -> models -> strategies -> reporting -> stress
 | `config.py` | Dates, parameters, names, colors and research costs | Shared configuration |
 | `data_pipeline.py` | SORA, prices, FX, VIX and benchmarks | `prices_sgd`, `returns` |
 | `models.py` | Momentum, EWMA, downside, GARCH, ERC and dynamic budgets | Target-weight functions |
-| `strategies.py` | Twelve strategies, delayed execution, holdings and trades | `results`, `strategy_returns` |
+| `strategies.py` | Thirteen strategies, delayed execution, holdings and trades | `results`, `strategy_returns` |
 | `reporting.py` | Metrics, returns, drawdowns and holdings | Formal figures and tables |
 | `stress_tests.py` | Historical/simulated shocks, costs, delay, bootstrap and VaR/ES | Stress evidence |
 | `benchmarks.py` | SGD P&L, FIFO trades and market comparisons | Alpha/beta and trade statistics |
@@ -153,11 +157,12 @@ Dependent modules are not independent entry points. Use `explore/main.py`.
 | `download.py` | Request-specific Yahoo cache | `download_market_data()` |
 | `market_data.py` | SGD prices, returns, FX, VIX and benchmarks | Shared market context |
 | `validation.py` | Observed quote and exchange-session checks | `validate_quote_coverage()` |
-| `strategy.py` | Momentum, EWMA, budgets and offensive rules | Signal and allocation functions |
-| `backtest.py` | Historical replay and next-close execution | `run_dynamic_backtest()`, `run_dynamic_attack_backtest()` |
+| `strategy.py` | Momentum, EWMA, budgets, offensive rules and the 20-day confirmation | Signal and allocation functions, `short_trend_confirmed()` |
+| `backtest.py` | Historical replay and next-close execution | `run_dynamic_backtest()`, `run_dynamic_attack_backtest()`, `run_dynamic_attack_h20_backtest()` (GMI-ATC) |
 | `evaluation.py` | Metrics, drawdowns and FIFO ledger | `compute_metrics()`, `build_fifo_trade_ledger()` |
 | `plots.py` | Returns, wealth, drawdown and allocation charts | `plot_comparison()` |
 | `export.py` | 18-asset closing-price export | `export_asset_closing_prices()` |
+| `realistic_costs.py` | Supplementary market-specific cost scenario on the frozen trade path | `cost_schedule()`, `replay_costs()` |
 
 The two public entry points intentionally differ:
 
@@ -174,7 +179,7 @@ Historical results go to `output/historical_backtest/` and never overwrite forma
 |---|---:|---|
 | `DOWNLOAD_START` | 1990-01-01 | Earliest requested Yahoo history |
 | `LOOKBACK` | 252 | Momentum/covariance window |
-| `VOL_LOOKBACK` | 63 | Standard volatility window |
+| `VOL_LOOKBACK` | 63 | Standard volatility window (the offensive ranking uses the same 63-day window) |
 | `MOMENTUM_SKIP` | 21 | 12-1 skip period |
 | `MOMENTUM_6M` | 126 | Six-month trend window |
 | `MA_WINDOW` | 200 | Long-term moving average |
@@ -198,6 +203,7 @@ Historical results go to `output/historical_backtest/` and never overwrite forma
 | `ATTACK_CORRELATION_LIMIT` | 0.75 | Pairwise correlation limit |
 | `VIX_CASH_HIGH` | 30 | Enter crisis state |
 | `VIX_CASH_LOW` | 25 | Exit crisis state |
+| `ATTACK_SHORT_MA` | 20 | GMI-ATC offensive eligibility: close above 20-day moving average |
 
 ### 3.3 Research and evaluation dates
 
@@ -206,13 +212,14 @@ Historical results go to `output/historical_backtest/` and never overwrite forma
 | In-sample end | 2024-12-31 | Initial research |
 | Historical validation | 2025-01-01 to 2026-07-31 | Forward validation evidence |
 | Frozen research end | 2026-07-31 | End of completed research |
+| Locked holdout | 2026-08-01 to 2026-10-01 | Short post-research check |
 | Formal course evaluation | 2026-10-01 to 2026-10-31 | Instructor evaluation |
 
-Historical validation was inspected during development and is not described as an untouched final holdout.
+Historical validation was inspected during development and is not described as an untouched final holdout. The GMI-ATC 20-day window was chosen from a 20/30/50/100/200-day grid evaluated over the full research period under both the fixed 0.05% fee and the realistic-cost scenario: Sharpe improves monotonically as the window shortens, and intra-period monitoring (every 1/3/5/10 sessions) was rejected because it reduced net performance under realistic costs. Because the rule was introduced on 2026-10-21, the October 2026 test is reported as an observation, not as independent out-of-sample evidence.
 
 ## 4. Formal and Realistic Transaction Costs
 
-All formal strategies use a fixed **0.05% one-way fee on actual executed notional**. The research archive also contains a separate realistic-cost scenario for GMI-ADG; it never overwrites formal results.
+All formal strategies use a fixed **0.05% one-way fee on actual executed notional**. The research archive also contains a separate realistic-cost scenario for the final strategy GMI-ATC; it never overwrites formal results.
 
 | Market | Commission/fees | Spread/slippage |
 |---|---:|---:|
@@ -251,8 +258,10 @@ All inputs are lagged. The scenario also applies an asset-level annual withholdi
 - `strict_risk_budget()`: solve long-only fully invested risk-budget weights.
 - `fully_dynamic_class_budget()` / `fully_dynamic_budget()`: allocate risk across and within classes.
 - `dynamic_attack_state()`: determine the offensive share.
+- `short_trend_confirmed()`: GMI-ATC 20-day trend confirmation for offensive eligibility.
 - `select_dynamic_attack_assets()`: impose ranking, class and correlation rules.
-- `run_dynamic_attack_backtest()`: replay holdings, reviews, next-close orders and costs.
+- `run_dynamic_attack_backtest()`: replay holdings, reviews, next-close orders and costs (`short_trend_window=None` is GMI-ADG).
+- `run_dynamic_attack_h20_backtest()`: the final product GMI-ATC (`short_trend_window=ATTACK_SHORT_MA`).
 - `apply_realistic_cost_model()`: create the independent realistic-cost result.
 - `compute_metrics()`: calculate return, volatility, Sharpe, Sortino, drawdown, Calmar and turnover.
 - `build_fifo_trade_ledger()`: reconstruct post-fee quantities and FIFO matches, including inherited opening holdings.
@@ -291,7 +300,7 @@ The product replays all earlier holdings, pending orders, review timing, drawdow
 
 `evaluate_historical_backtest()` accepts no date or capital parameters and runs the frozen historical product comparison.
 
-## 6. Twelve Research Strategies
+## 6. Thirteen Research Strategies
 
 | Acronym | Full name | Role |
 |---|---|---|
@@ -305,7 +314,8 @@ The product replays all earlier holdings, pending orders, review timing, drawdow
 | GMI-GRP | Global Momentum GARCH Risk Parity | GARCH comparison |
 | GMI-AHRB | Global Momentum Adaptive Hierarchical Risk Budget | Final core |
 | GMI-FOA | Global Momentum Fixed Offensive Allocation | Fixed offensive comparison |
-| **GMI-ADG** | **Global Momentum Adaptive Defense and Growth** | **Final submitted strategy** |
+| GMI-ADG | Global Momentum Adaptive Defense and Growth | Ablation: offensive sleeve without 20-day confirmation |
+| **GMI-ATC** | **Global Momentum Adaptive Trend-Confirmed Allocation** | **Final submitted strategy** |
 | GMA-CRP | Global Multi-Asset Classic Risk Parity | Full-universe risk parity |
 
 Charts and tables use acronyms; the report can introduce each full name once.
@@ -319,7 +329,7 @@ data through close t
   -> new holdings earn subsequent interval returns
 ```
 
-Signal dates must precede execution dates. Momentum, MA200, EWMA, correlation, volume and impact use only lagged information. Evaluation inherits true opening holdings rather than resetting to cash. Returns use pre-return holdings; closing weights reflect completed trades. Formal evaluation checks observed Close for all 18 assets, VT, VIX/VIX3M, VIX Open and FX proxies against exchange sessions. Interior gaps fail rather than being hidden by valuation filling.
+Signal dates must precede execution dates. Momentum, MA200, the GMI-ATC 20-day moving average, EWMA, correlation, volume and impact use only lagged information. Evaluation inherits true opening holdings rather than resetting to cash. Returns use pre-return holdings; closing weights reflect completed trades. Formal evaluation checks observed Close for all 18 assets, VT, VIX/VIX3M, VIX Open and FX proxies against exchange sessions. Interior gaps fail rather than being hidden by valuation filling.
 
 Historical research retains the documented maximum five-business-day fill convention for isolated provider gaps, and the historical status file explicitly discloses this difference.
 
@@ -432,7 +442,7 @@ python -m nbconvert --execute --to notebook --inplace `
 
 ## 11. Outputs and Safe Publication
 
-Formal figures are `growth.png`, `wealth.png`, `drawdown.png` and `allocation.png`. Tables contain metrics, daily returns, NAV, P&L, drawdowns, weights, FIFO matches, trade legs, costs, SORA alignment and quote coverage. CSVs retain calculation precision; charts and console output use two decimals.
+Formal figures are `growth.png`, `wealth.png`, `drawdown.png` and `allocation.png`, each comparing five series: GMI-ATC, GMI-ADG, GMA-EW, VT and STI (ES3.SI). Tables contain metrics, daily returns, NAV, P&L, drawdowns, weights, FIFO matches, trade legs, costs, SORA alignment and quote coverage. CSVs retain calculation precision; charts and console output use two decimals.
 
 The 18-asset export includes asset metadata, unadjusted local closes, adjusted local closes, adjusted SGD closes and data notes. Holidays and pre-listing dates remain missing. Weekend Bitcoin uses preceding FX, never a future rate. VT is an extra benchmark, not a nineteenth strategy asset.
 
@@ -440,8 +450,8 @@ Outputs are built in a temporary sibling folder and published only after every r
 
 ## 12. Reproduction Checklist
 
-- [ ] 18 formal assets and 12 formal strategies.
-- [ ] GMI-ADG is the submitted strategy.
+- [ ] 18 formal assets and 13 formal strategies.
+- [ ] GMI-ATC is the submitted strategy; GMI-ADG is its no-confirmation ablation.
 - [ ] Research ends on 2026-07-31.
 - [ ] October evaluation uses the independent final-product path.
 - [ ] SORA loads without a fixed-rate fallback.
@@ -473,11 +483,12 @@ The project has been checked by direct execution:
 
 - fixed `code/backtest.py` completed for 2015-09-07 to 2026-07-31;
 - formal `code/main.py` completed its currently available interim path;
-- 26 regression tests passed;
+- 31 tests passed (28 regression tests in `tests/test_regressions.py`, including GMI-ATC look-ahead and accounting checks, and 3 realistic-cost tests);
+- the complete research workflow ran through `visuals` with 13 strategies, and GMI-ADG's results were bit-identical before and after GMI-ATC was added;
 - all historical tables and four figures were generated; and
 - successful product outputs include current source hashes.
 
-As of 17 October 2026, the requested 1–31 October interval is unfinished. Any currently available formal result is labelled `PARTIAL` and ends on the latest common date supported by observed quotes. After month-end, update `data/raw/raw sora.csv`, use `--refresh`, and require a non-partial completion before reporting final October performance.
+As of 21 October 2026, the requested 1–31 October interval is unfinished. Any currently available formal result is labelled `PARTIAL` and ends on the latest common date supported by observed quotes. After month-end, update `data/raw/raw sora.csv`, use `--refresh`, and require a non-partial completion before reporting final October performance.
 
 ## 15. Updating the Formal Evaluation Period
 
@@ -530,3 +541,41 @@ This populates `explore/report_work/assets/` and `explore/report_work/tables/`. 
 All operational paths are resolved relative to the project files. No author-specific username, drive letter or Conda environment is required. Relative `--output-dir` and `--raw-sora` arguments are interpreted from the terminal's current directory. Existing JSON files may record the machine that generated them, but those paths are audit information rather than runtime dependencies.
 
 The Windows portability check used a clean 64-bit CPython 3.10 environment, installed only the root requirements, parsed the raw MAS export, ran the final product, generated all four figures and the 18-asset export, executed the final notebook, and ran the complete research workflow. This supports reproducibility on the tested environment; it does not guarantee every operating system, future provider response or optional editorial utility.
+
+## 18. Two Cost Scenarios in the Final Evaluator
+
+Every completed or partial evaluation now exports both the official fixed 0.05%
+one-way results and a supplementary market-specific cost sensitivity. No new
+command-line parameter is required. Unfinished requests without `--allow-partial`
+still return PENDING, not fabricated performance.
+
+The original `performance_metrics.csv`, `daily_returns.csv`, and figures retain
+their fixed-fee meaning. Additional tables in `output/tables/` are:
+`realistic_cost_schedule.csv` (decimal rates by instrument),
+`realistic_performance_metrics.csv`, `cost_scenario_metrics.csv` (both scenarios),
+`realistic_daily_returns.csv`, `realistic_daily_nav.csv`, and
+`realistic_daily_cost_components.csv`. Additional figures, including growth,
+wealth, drawdown and allocation, are in `output/figures/realistic_costs/`.
+
+The implementation is `code/realistic_costs.py`; it copies the market commissions,
+spread/slippage, currency-conversion and annual tax-drag assumptions from the
+research code without importing or executing explore. VT additionally uses a
+0.36% annual distribution-tax drag proxy. These are manually fixed scenario
+assumptions, not verified broker quotes or exact investor tax liabilities.
+Commission/spread/FX rates apply to absolute executed weights, not the whole
+portfolio every day. Annual tax drag applies to daily opening holdings / 252.
+FX is charged on each foreign-currency trade without currency-cash netting.
+
+Market impact uses 0.10 times lagged 20-session daily volatility times the square
+root of order value / lagged 20-session median SGD traded volume, capped at 1%
+per traded unit (minimum five observations). Missing liquidity on an actual trade
+raises an error rather than assuming zero impact. Order value uses pre-cost,
+post-market-return scenario wealth, starting at the requested investment amount.
+
+This is a **frozen holding/trade-path sensitivity**, not an independent execution
+backtest: the fixed-fee strategy's signals, weights, rebalance dates and turnover
+are held constant. Inherited opening positions are not repurchased or charged
+again. Costs do not feed back into attack/drawdown decisions. Thus allocation
+charts are intentionally identical between scenarios. Realistic FIFO trade-level
+statistics are not claimed; `course_metrics.csv` remains fixed-fee only.
+

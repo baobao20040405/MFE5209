@@ -10,12 +10,17 @@ DATA=ROOT/'report_work'/'visual_diagnostics'
 
 class VisualEvidenceTests(unittest.TestCase):
     def test_formal_metrics_unchanged(self):
-        old=pd.read_csv(next((ROOT/'report_work'/'tables').glob('cell_075_table_01_*.csv')),header=[0,1])
+        # Locate the Section 6.4 summary by its cell heading, not its position, so inserted cells do not break it.
+        old=pd.read_csv(next((ROOT/'report_work'/'tables').glob('cell_*_table_01_FINAL_EXPECTED_STRATEGY_COUNT*.csv')),header=[0,1])
         old.columns=[b if not b.startswith('Unnamed:') else a for a,b in old.columns]
-        old=old[old['Period'].str.startswith('Complete research')].set_index('Policy')
+        old=old[old['Period'].str.startswith('Full Research Period')].set_index('Policy')
+        self.assertEqual(len(old),len(set(old.index)))
+        self.assertGreaterEqual(len(old),12)
         new=pd.read_csv(DATA/'strategy_tradeoff.csv',index_col=0)
-        self.assertEqual(set(old.index),set(new.index))
-        for name in new.index:
+        # Tables exported before GMI-ATC was added lack only GMI-ATC; tables exported afterwards contain it.
+        self.assertEqual(set(old.index)-set(new.index),set())
+        self.assertLessEqual(set(new.index)-set(old.index),{'Global Momentum Adaptive Trend-Confirmed Allocation (GMI-ATC)'})
+        for name in old.index:
             # GARCH refits differ slightly between the saved Notebook runtime
             # and this environment; retain and disclose that drift separately.
             if 'GARCH' in name:
@@ -41,7 +46,7 @@ class VisualEvidenceTests(unittest.TestCase):
 
     def test_recovery_and_state_counts(self):
         data=pd.read_csv(DATA/'recovery_summary.csv',index_col=0)
-        self.assertEqual(len(data),9)
+        self.assertEqual(len(data),12)  # three windows x four core strategies
         self.assertTrue(data.loc[~data['Fix by end of window'],'Until the date of the transaction'].isna().all())
         for _,frame in data.groupby('Window'):
             self.assertEqual(frame['Window Start Day'].nunique(),1)

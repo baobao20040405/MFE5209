@@ -32,7 +32,8 @@ def run():
     else:
         context=main('reporting')
         with cache.open('wb') as destination:
-            pickle.dump({key:context[key] for key in ['results','returns','assets','ALL_ASSETS','prices_sgd']},destination)
+            pickle.dump({key:context[key] for key in ['results','returns','assets','ALL_ASSETS','prices_sgd',
+                         'realistic_submission_result','benchmark_returns_sgd']},destination)
     context['PROJECT_ROOT']=root
     plt.show=original_show
     data=build_visual_diagnostics(context,show=False)

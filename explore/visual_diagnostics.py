@@ -15,8 +15,8 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
     output = Path(output_dir or Path(c['PROJECT_ROOT']) / 'report_work' / 'visual_diagnostics')
     output.mkdir(parents=True, exist_ok=True)
     results, names = c['results'], c['STRATEGY_NAMES']
-    final = names['dynamic_attack']
-    core = [names[k] for k in ['fully_dynamic', 'fixed_attack', 'dynamic_attack']]
+    final = names['dynamic_attack_h20']
+    core = [names[k] for k in ['fully_dynamic', 'fixed_attack', 'dynamic_attack', 'dynamic_attack_h20']]
     colors, labels = c['STRATEGY_COLORS'], c['STRATEGY_LABELS']
     assets, end = c['assets'], c['RESEARCH_END']
     returns = c['returns'].loc[:end]
@@ -64,18 +64,18 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
         fig.text(.03,.015,footer,fontsize=9,color='#666666')
         finish(key, fig, footer)
 
-    flow('research_path', 'Research Path Across the 12 Retained Strategies', [
+    flow('research_path', f'Research Path Across the {len(results)} Retained Strategies', [
         ('Allocation Baselines', '18-asset equal weight\nMonthly all-asset ERC'),
         ('Risk Models', 'Same Top 10 signal\nFive covariance specifications'),
         ('Budget Design', 'Single-level and static hierarchy\nAdaptive two-level hierarchy'),
-        ('Offensive Sleeve', 'Fixed 30% versus dynamic 0%-30%\nFinal selection: GMI-ADG'),
+        ('Offensive Sleeve', 'Fixed 30% vs dynamic 0%-30%\n+20-day trend confirmation\nFinal selection: GMI-ATC'),
     ], 'Arrows show the progression of research questions; they do not imply that every added module improves every metric. Downside and GARCH models are parallel tests.')
-    flow('construction_steps', 'GMI-ADG: Seven Steps from Signal to Execution', [
+    flow('construction_steps', 'GMI-ATC: Seven Steps from Signal to Execution', [
         ('Momentum Screen', '12-1 month momentum\nSelect the Top 10 of 18 assets'),
         ('Class Budgets', 'Class rank and trend breadth\nSet class-level risk shares'),
         ('Security Budgets', 'Within-class rank and trend\nSet security-level risk shares'),
         ('Core Optimizer', 'EWMA covariance, lambda=0.94\nJoint risk-budget solution'),
-        ('Dynamic Offense', 'Eligibility and diversification\nBreadth, drawdown, and VIX caps'),
+        ('Dynamic Offense', 'Eligibility incl. close > 20-day MA\nBreadth, drawdown, and VIX caps'),
         ('Trading Buffer', 'Core plus 0%-30% offense\nPartial adjustment and no-trade band'),
         ('Next-Day Execution', 'Trade at the next close\nDeduct costs from executed notional'),
     ], 'Risk budgets are not capital weights. A 0% offensive target returns the strategy to its core portfolio; it does not liquidate the entire portfolio.')
@@ -86,6 +86,7 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
     # Discrete size bins avoid making a tiny turnover difference look material.
     bins = pd.cut(metrics['Annual One-Way Turnover'], [-np.inf,1,3,np.inf], labels=[90,170,270]).astype(int)
     offsets = {names['dynamic_attack']:(12,12), names['fixed_attack']:(10,-19),
+               names['dynamic_attack_h20']:(14,-4),
                names['fully_dynamic']:(10,10), names['equal_weight']:(10,-15),
                names['monthly_erc']:(10,10), names['ewma_erc']:(-100,25),
                names['static_hierarchical']:(-120,-12), names['single_dynamic']:(-100,48),
@@ -102,12 +103,12 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
         ax.annotate(labels[n],(x,y),xytext=(dx,dy),textcoords='offset points',fontsize=9,
                     arrowprops=dict(arrowstyle='-',color=colors[n],lw=.6))
     ax.set(xlabel='Maximum Drawdown Magnitude (lower is better)', ylabel='Annualized Net Return',
-           title='Return-Drawdown Trade-Off Across 12 Strategies')
+           title=f'Return-Drawdown Trade-Off Across {len(metrics)} Strategies')
     ax.xaxis.set_major_formatter(PercentFormatter(1,decimals=2))
     ax.yaxis.set_major_formatter(PercentFormatter(1,decimals=2))
     size_handles = [plt.scatter([], [], s=size, color='#A7ADB4', label=label)
                     for size, label in [(90,'Turnover <= 100%'),(170,'100% < Turnover <= 300%'),(270,'Turnover > 300%')]]
-    strategy_legend = ax.legend(handles=strategy_handles, ncol=4, loc='upper center',
+    strategy_legend = ax.legend(handles=strategy_handles, ncol=4 if len(strategy_handles) <= 12 else 5, loc='upper center',
                                 bbox_to_anchor=(.5, -.17), frameon=False, fontsize=8.5,
                                 columnspacing=1.2, handletextpad=.4)
     ax.add_artist(strategy_legend)
@@ -119,18 +120,18 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
     yearly = common[core].groupby(common.index.year).apply(lambda x:(1+x).prod()-1).T
     yearly.columns = [f'{y}' + ('*' if y in [common.index[0].year,common.index[-1].year] else '') for y in yearly.columns]
     save_table('annual_core_returns',yearly)
-    fig,ax=plt.subplots(figsize=(12,3.8))
+    fig,ax=plt.subplots(figsize=(12,1.1+0.9*len(core)))
     cmap=LinearSegmentedColormap.from_list('approved',['#2b549c','#f0f0f0','#b82626'])
     limit=max(.01,np.nanmax(np.abs(yearly.values)))
     im=ax.imshow(yearly.values,cmap=cmap,norm=TwoSlopeNorm(vmin=-limit,vcenter=0,vmax=limit),aspect='auto')
     ax.set_xticks(range(len(yearly.columns)),yearly.columns,fontsize=10)
-    ax.set_yticks(range(3),[labels[n] for n in core],fontsize=10)
-    for i in range(3):
+    ax.set_yticks(range(len(core)),[labels[n] for n in core],fontsize=10)
+    for i in range(len(core)):
         for j in range(len(yearly.columns)):
             v=yearly.iloc[i,j]
             ax.text(j,i,f'{v:.2%}',ha='center',va='center',fontsize=10,color='white' if abs(v)>.65*limit else '#333333')
     cb=fig.colorbar(im,ax=ax,pad=.02); cb.ax.yaxis.set_major_formatter(PercentFormatter(1,decimals=2)); cb.ax.tick_params(labelsize=10)
-    ax.set_title('Annual Net Returns of the Three Core Strategies (* Partial Year)')
+    ax.set_title(f'Annual Net Returns of the {len(core)} Core Strategies (* Partial Year)')
     fig.tight_layout()
     finish('annual_core_returns',fig,'Calendar-year net returns, not annualized returns. 2015 and 2026 are partial years.')
 
@@ -141,16 +142,29 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
     # Before the first execution the strategy is cash, not an observed 0% decision.
     save_table('attack_state_daily',daily)
     fig,axes=plt.subplots(3,1,figsize=(12,8),sharex=True,gridspec_kw={'height_ratios':[2,1.3,1.3]})
-    for n in core:
-        nav=(1+common[n]).cumprod()
-        axes[0].plot(nav.index,nav,color=colors[n],lw=1.5,label=labels[n])
+    # Top panel: final strategy under both cost conventions against the internal benchmark and both market benchmarks.
+    realistic_final = c['realistic_submission_result']['returns'].reindex(common.index)
+    market = c['benchmark_returns_sgd'][['ES3.SI','VT']].reindex(common.index)
+    if realistic_final.isna().any() or market.isna().any().any():
+        raise ValueError('Realistic-cost or market benchmark returns do not cover the common research dates.')
+    nav_lines = [
+        (f"{labels[names['equal_weight']]} (benchmark)", common[names['equal_weight']], colors[names['equal_weight']], '-', 1.4),
+        ('STI (ES3.SI)', market['ES3.SI'], c['MARKET_BENCHMARK_COLORS']['ES3.SI'], '-', 1.4),
+        ('Global equities (VT)', market['VT'], c['MARKET_BENCHMARK_COLORS']['VT'], '-', 1.4),
+        (f'{labels[final]} (Fixed 0.05%)', common[final], colors[final], '-', 2.2),
+        (f'{labels[final]} (Realistic Costs)', realistic_final, '#C85A6A', '--', 1.9),
+    ]
+    save_table('attack_state_nav', pd.DataFrame({label: (1+series).cumprod() for label, series, *_ in nav_lines}))
+    for label, series, color, style, width in nav_lines:
+        nav=(1+series).cumprod()
+        axes[0].plot(nav.index,nav,color=color,lw=width,linestyle=style,label=label)
     axes[0].set_ylabel('NAV (Start = 1)'); axes[0].set_title('Dynamic Offensive Target and Market-State Alignment')
     axes[0].yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
     axes[1].step(daily.index,daily['Offensive Allocation'],where='post',color=colors[final],label='Executed offensive target')
     axes[1].plot(daily.index,daily['Qualified Trend Breadth'],color=palette['FX'],lw=1,label='Qualified trend breadth at execution')
     axes[1].set_ylabel('Share'); axes[1].yaxis.set_major_formatter(PercentFormatter(1,decimals=2))
     state=r['state_history'].reindex(common.index)
-    axes[2].fill_between(state.index,0,state['Portfolio Drawdown'],color=colors[final],alpha=.20,linewidth=0,label='Portfolio Drawdown')
+    axes[2].fill_between(state.index,0,state['Portfolio Drawdown'],color=colors[final],alpha=.20,linewidth=0,label=f'{labels[final]} drawdown (Fixed 0.05%)')
     axes[2].fill_between(state.index,0,1,where=state['VIX Crisis'].fillna(False).astype(bool),
                          transform=axes[2].get_xaxis_transform(),color='#A7ADB4',alpha=.3,linewidth=0,label='VIX crisis state')
     axes[2].set_ylabel('Drawdown'); axes[2].yaxis.set_major_formatter(PercentFormatter(1,decimals=2))
@@ -160,7 +174,7 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
         handles.extend(h); legend_labels.extend(l)
     fig.legend(handles, legend_labels, ncol=4, loc='lower center',
                bbox_to_anchor=(.5, .005), frameon=False, fontsize=9)
-    fig.subplots_adjust(hspace=.28,bottom=.15)
+    fig.subplots_adjust(hspace=.28,bottom=.17)
     finish('attack_state',fig,'The offensive allocation is the model target carried by each executed order and forward-filled thereafter. It is not a separately drifted offensive sub-account. Qualified breadth is also recorded at execution rather than recalculated daily.')
 
     def aggregate(series):
@@ -287,7 +301,7 @@ def build_visual_diagnostics(context, output_dir=None, show=True):
     for rank,(peak_pos,trough_pos,end_pos,depth,recovered) in enumerate(sorted(episodes,key=lambda e:e[3])[:3],1):
         window=common.iloc[peak_pos:end_pos][core]
         if window.empty:continue
-        paths=np.vstack([np.ones(3),(1+window).cumprod().values])
+        paths=np.vstack([np.ones(len(core)),(1+window).cumprod().values])
         save_table(f'recovery_path_{rank}',pd.DataFrame(paths,columns=core).rename_axis('From common starting date'))
         fig,ax=plt.subplots(figsize=(11,4.8))
         for j,n in enumerate(core):

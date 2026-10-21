@@ -76,9 +76,10 @@ CORE_COMPARISON_STRATEGIES = [
     FULLY_DYNAMIC_BUDGET_NAME,
     CORE_ATTACK_NAME,
     DYNAMIC_ATTACK_NAME,
+    DYNAMIC_ATTACK_H20_NAME,
 ]
-if len(CORE_COMPARISON_STRATEGIES) != 3 or len(set(CORE_COMPARISON_STRATEGIES)) != 3:
-    raise RuntimeError('The core group must contain exactly three elements without repetition.')
+if len(CORE_COMPARISON_STRATEGIES) != 4 or len(set(CORE_COMPARISON_STRATEGIES)) != 4:
+    raise RuntimeError('The core group must contain exactly four elements without repetition.')
 missing_core_comparison = [name for name in CORE_COMPARISON_STRATEGIES if name not in results]
 if missing_core_comparison:
     raise RuntimeError(f'The core comparison strategy is not yet registered:{missing_core_comparison}')
@@ -172,8 +173,8 @@ FOCUS_STRATEGIES = [
     DYNAMIC_BUDGET_NAME, *CORE_COMPARISON_STRATEGIES,
     STRATEGY_NAMES['ewma_erc'], STATIC_CLASSIC_NAME, BASELINE_STRATEGY,
 ]
-if len(FOCUS_STRATEGIES) != 7 or len(set(FOCUS_STRATEGIES)) != 7:
-    raise RuntimeError('The priority strategy list must contain seven items and should not be repeated.')
+if len(FOCUS_STRATEGIES) != 8 or len(set(FOCUS_STRATEGIES)) != 8:
+    raise RuntimeError('The priority strategy list must contain eight items and should not be repeated.')
 missing_focus = [name for name in FOCUS_STRATEGIES if name not in results]
 if missing_focus:
     raise RuntimeError(f'Focus strategy not yet registered:{missing_focus}')
@@ -201,7 +202,7 @@ def plot_all_strategy_cumulative(strategy_return_frame):
         )
     for strategy_name in FOCUS_STRATEGIES:
         is_baseline = strategy_name == BASELINE_STRATEGY
-        is_submission = strategy_name == DYNAMIC_ATTACK_NAME
+        is_submission = strategy_name == SUBMISSION_STRATEGY
         ax.plot(
             cumulative.index, cumulative[strategy_name],
             color=HIGHLIGHT_COLORS.get(strategy_name, '#4C78A8'),
@@ -252,7 +253,7 @@ def plot_all_strategy_drawdowns(strategy_return_frame, color_map):
 
     for strategy_name in drawdowns.columns:
         is_focus = strategy_name in FOCUS_STRATEGIES
-        is_submission = strategy_name == DYNAMIC_ATTACK_NAME
+        is_submission = strategy_name == SUBMISSION_STRATEGY
         is_base = strategy_name == BASELINE_STRATEGY
         color = color_map[strategy_name]
         if is_submission or is_base:

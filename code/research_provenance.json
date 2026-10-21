@@ -9,12 +9,12 @@
     "data_pipeline.py": "dbb8c2e4f4d7af00aa4bc5460743b65fd03ceaf7af3ba64d3ba5b36f3ec23d4c"
   },
   "current_research_sha256": {
-    "config.py": "e8c88385e1154637aab23329cdbf82af2ba56ea849c59b75d9730d0476679414",
+    "config.py": "bb9aa3264c4680053e227bab5a7de150086ff25c52cd5132455b3a15be795a29",
     "models.py": "0e35cbaf0b2fbc568f15d931c042bcf3f47c92f44b456fb3d28ed29efd28cc75",
-    "strategies.py": "2927421278c027ead6546aa95bbe9a620a6c8c5bde649131a821df23bfd8b442",
-    "reporting.py": "cbae8f3c6bfe7e9203546ed9ac0bf595eebcf6caea9f96bfa9fc1dc7bd7d6e2f",
-    "benchmarks.py": "723743153dbdfa92d8fe801ff4620bcb8595a3f80bf6ba40aa6fd2c8e742b1c3",
+    "strategies.py": "7eaaf5011fe4a7b8cf09a1902eb1a85f9501d722cc2f4c459a17e01104a747d8",
+    "reporting.py": "5aff0b7f994b53e0ba1c517a291133c94630e621b15a2c1bc54f21cd282faa4f",
+    "benchmarks.py": "53e23b4f0148cdfb7b7fac05e44af2e236d20fcb9187efc8fdba2b35eb3294f3",
     "data_pipeline.py": "dbb8c2e4f4d7af00aa4bc5460743b65fd03ceaf7af3ba64d3ba5b36f3ec23d4c"
   },
-  "maintenance_note": "source_sha256 records original extraction inputs. current_research_sha256 records current synchronized research modules; FIFO now reconciles quantities to post-fee NAV and closing weights."
+  "maintenance_note": "source_sha256 records original extraction inputs. current_research_sha256 records current synchronized research modules; FIFO now reconciles quantities to post-fee NAV and closing weights. Updated 2026-10-21: GMI-ATC (GMI-ADG plus the 20-day trend confirmation) was added to both code/ and explore/; current_research_sha256 records the synchronized research modules after that change."
 }

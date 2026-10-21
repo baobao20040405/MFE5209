@@ -281,7 +281,7 @@ display(ablation_table.style.format({
 # --- Original Notebook code module 87-
 WALK_FORWARD_STRATEGIES = [
     BASELINE_STRATEGY, STATIC_CLASSIC_NAME, STRATEGY_NAMES['ewma_erc'],
-    FULLY_DYNAMIC_BUDGET_NAME, CORE_ATTACK_NAME, DYNAMIC_ATTACK_NAME,
+    FULLY_DYNAMIC_BUDGET_NAME, CORE_ATTACK_NAME, DYNAMIC_ATTACK_NAME, DYNAMIC_ATTACK_H20_NAME,
 ]
 first_full_year = strategy_start.year + 1
 last_full_year = RESEARCH_END.year - (RESEARCH_END.month < 12)

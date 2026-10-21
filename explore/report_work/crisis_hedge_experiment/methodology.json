@@ -1,0 +1,60 @@
+{
+  "end": "2026-07-31",
+  "capital_sgd": 1000000.0,
+  "variants": {
+    "GMI-ADG": [
+      "none",
+      1.0,
+      0.0
+    ],
+    "CASH-30": [
+      "broad",
+      0.7,
+      0.0
+    ],
+    "SHORT-10": [
+      "broad",
+      0.7,
+      0.1
+    ],
+    "SHORT-20": [
+      "broad",
+      0.7,
+      0.2
+    ],
+    "CORR-SHORT-20": [
+      "correlation",
+      0.7,
+      0.2
+    ]
+  },
+  "entry": "VT below MA200 and 63-day return negative; >=3/5 classes negative 63-day returns",
+  "correlation_variant": "Additionally 60-day mean off-diagonal class correlation >=0.30 at entry",
+  "exit": "Equity downtrend condition no longer true OR <=1/5 negative classes",
+  "execution": "Signal close t, trade close t+1, return impact from t+2",
+  "borrow": "3% annual base; 1% and 10% sensitivities; zero rebate; 50% additional margin",
+  "limitations": [
+    "Frozen baseline fund path; overlay does not feed into core drawdown decisions",
+    "Short SPY SGD total-return proxy: currency/broker execution and stock-loan availability not certified",
+    "No October holdout inspected; historical validation was already viewed in prior research",
+    "Baseline realistic sleeve is frozen-path sensitivity; overlay core resizing uses 0.15% cost proxy",
+    "No crisis guarantee, no short availability or forced recall model; no optimized thresholds"
+  ],
+  "product_code_sha256": {
+    "assets.py": "e85761f969083a245e3dc7a8e858a212ff8b667b94816a98ca59c7b038ad4497",
+    "backtest.py": "eddfedef993ba22f03cd3abf1efa78fe63dff9e98129cedd7b72ef99e1c734ee",
+    "config.py": "0a438946a94fb5cbb4e672d6551476b575f3a81eea59083b8774656b7bcfa866",
+    "data.py": "6b079fba2578ada19e135d67032b64c586328bd12ffde70f377b1474261845c2",
+    "download.py": "9ef9a311dc22acf9bf5a421c41e23881fe592410bdbff786784e6095efc28d78",
+    "evaluation.py": "597bf5d880d524a8afbfc1ad137f31ebf71f6f051bafeb74e2a5f48bcd8300d8",
+    "export.py": "5ca0b69d6e7750942c40c09bc0fe24e5aa01bec756b65849c267c09db1e51b50",
+    "main.py": "e0d96e1cf841e9f1d76d179712ce63f20c42f674fc933719461e7f145b3ad469",
+    "market_data.py": "73ecf7425c73b9ff8528052f0d7c4a7533232526af58f0b4a05998603d47e364",
+    "plots.py": "172d1ca83f6dc6a264a53c3573e4fcc4128a4ce03cc92c13103a4340245ff34d",
+    "product_evaluation.py": "edfc3ab0c63a79017a9d69888215c75d912d337aa0267880787fd12c6bfc57f7",
+    "realistic_costs.py": "3b3eca3a85809a9b566fa245b4717eb0655ab87e8d848f8d73761facc37d7f4f",
+    "strategy.py": "76434ab8bdb87672383a8ed1aa6f3b9b48342969dd96f2a11a71c19bed11c99c",
+    "validation.py": "90fc760029e572031cb851d388c6455a9724894c362cf1fa0d79764c30b10e68"
+  },
+  "unchanged_after_run": true
+}

@@ -1,4 +1,4 @@
-"""Standalone final GMI-ADG product: evaluate four net-of-cost SGD series."""
+"""Standalone final GMI-ATC product: evaluate five net-of-cost SGD series (GMI-ATC, GMI-ADG, GMA-EW, VT, STI)."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -18,6 +18,7 @@ from download import download_market_data
 from export import export_asset_closing_prices
 from plots import plot_comparison, display_charts
 from validation import validate_quote_coverage, QuoteCoverageError
+from realistic_costs import cost_schedule, replay_costs
 
 CODE = Path(__file__).resolve().parent
 ROOT = CODE.parent
@@ -92,7 +93,7 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
                            strict_quote_coverage=True):
     """Evaluate frozen final rules, retaining the earlier portfolio state.
 
-    Capital is SGD. All four series use actual executed-notional fees of 0.05%.
+    Capital is SGD. All five series use actual executed-notional fees of 0.05%.
     The requested date window changes evaluation only; it never tunes a model.
     """
     start, end = pd.Timestamp(start), pd.Timestamp(end)
@@ -103,7 +104,7 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
     tables, figures = output / 'tables', output / 'figures'
     for folder in (tables, figures):
         folder.mkdir(parents=True, exist_ok=True)
-    status = {'strategy': 'GMI-ADG', 'comparisons': ['GMI-ADG', 'GMA-EW', 'VT', 'STI'],
+    status = {'strategy': 'GMI-ATC', 'comparisons': ['GMI-ATC', 'GMI-ADG', 'GMA-EW', 'VT', 'STI'],
         'requested_start': str(start.date()), 'requested_end': str(end.date()),
         'initial_capital_sgd': initial_capital, 'cost': 'Fixed 0.05% one-way', 'status': 'PENDING'}
     status_file = output / 'evaluation_status.json'
@@ -153,6 +154,7 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
             quote_audit = validate_quote_coverage(context, start, actual_end)
             status['partial_reason'] = f'Latest common observed coverage ends {actual_end.date()}. {exc}'
     results = {
+        'GMI-ATC': context['run_dynamic_attack_h20_backtest'](end_date=actual_end, sora_frame=sora, allow_holdout=True),
         'GMI-ADG': context['run_dynamic_attack_backtest'](end_date=actual_end, sora_frame=sora, allow_holdout=True),
         'GMA-EW': context['run_dynamic_backtest'](context['STRATEGY_NAMES']['equal_weight'],
             context['target_equal_weight'], end_date=actual_end, sora_frame=sora, allow_holdout=True),
@@ -191,7 +193,7 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
     (nav / nav.cummax().clip(lower=initial_capital) - 1).to_csv(tables / 'daily_drawdown.csv', index_label='Date')
     weights = {name: result['end_of_day_weights'].reindex(returns.index) for name, result in results.items()}
     pd.concat(weights, names=['Strategy', 'Date']).to_csv(tables / 'daily_weights.csv')
-    weights['GMI-ADG'].to_csv(tables / 'chosen_product_weights.csv', index_label='Date')
+    weights['GMI-ATC'].to_csv(tables / 'chosen_product_weights.csv', index_label='Date')
     pd.concat(ledgers, names=['Strategy', 'Match']).to_csv(tables / 'closed_trades.csv')
     trades = []
     for name, result in results.items():
@@ -206,13 +208,38 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
         'Convention': 'Fee times absolute executed-notional weight; no fee without trading.'}).to_csv(tables / 'cost_schedule.csv', index=False)
     sora_alignment_audit(context['returns'].loc[context['strategy_start']:actual_end].index, sora).to_csv(tables / 'sora_alignment.csv')
     partial = end >= today or actual_end < final_business_day
-    colors = {'GMI-ADG': context['STRATEGY_COLORS'][context['DYNAMIC_ATTACK_NAME']],
+    colors = {'GMI-ATC': context['STRATEGY_COLORS'][context['DYNAMIC_ATTACK_H20_NAME']],
+        'GMI-ADG': context['STRATEGY_COLORS'][context['DYNAMIC_ATTACK_NAME']],
         'GMA-EW': context['STRATEGY_COLORS'][context['STRATEGY_NAMES']['equal_weight']],
         'VT': context['MARKET_BENCHMARK_COLORS']['VT'], 'STI': context['MARKET_BENCHMARK_COLORS']['ES3.SI']}
     plot_metadata = context['assets'].copy()
     plot_metadata.loc['VT', 'Asset Class'] = 'Equities'
     charts, grouped = plot_comparison(returns, weights, plot_metadata, initial_capital, figures,
         colors, context['ASSET_CLASS_COLORS'], partial=partial)
+    # Separate sensitivity outputs: never overwrite the official fixed-fee series.
+    cost_metadata = context['assets'].copy()
+    cost_metadata.loc['VT', ['Market', 'Local Currency']] = ['United States', 'USD']
+    schedule = cost_schedule(cost_metadata)
+    schedule.to_csv(tables / 'realistic_cost_schedule.csv', index_label='Ticker')
+    realistic, components = {}, {}
+    for name, result in results.items():
+        realistic[name], components[name] = replay_costs(
+            result, context, returns.index, initial_capital, schedule)
+    realistic_returns = pd.DataFrame({name: item['returns'] for name, item in realistic.items()})
+    realistic_metrics = pd.DataFrame({name: context['compute_metrics'](item, start, actual_end)
+                                      for name, item in realistic.items()}).T
+    realistic_metrics.index.name = 'Strategy'
+    realistic_metrics.to_csv(tables / 'realistic_performance_metrics.csv')
+    pd.concat({'Fixed 0.05%': metrics, 'Realistic Costs': realistic_metrics},
+              names=['Cost Scenario', 'Strategy']).to_csv(tables / 'cost_scenario_metrics.csv')
+    realistic_returns.to_csv(tables / 'realistic_daily_returns.csv', index_label='Date')
+    ((1 + realistic_returns).cumprod() * initial_capital).to_csv(
+        tables / 'realistic_daily_nav.csv', index_label='Date')
+    pd.concat(components, names=['Strategy', 'Date']).to_csv(tables / 'realistic_daily_cost_components.csv')
+    realistic_charts, _ = plot_comparison(realistic_returns, weights, plot_metadata,
+        initial_capital, figures / 'realistic_costs', colors,
+        context['ASSET_CLASS_COLORS'], partial=partial, cost_scenario='Realistic Costs (Frozen Path)')
+    charts.update({f'realistic_{key}': value for key, value in realistic_charts.items()})
     pd.concat(grouped, names=['Strategy', 'Date']).to_csv(tables / 'asset_class_weights.csv')
     if export_prices:
         export_asset_closing_prices(context, tables, end=actual_end)
@@ -224,9 +251,18 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
         source_sha256=hashes, sora_publication_date=str(last_publication.date()),
         quote_coverage='Observed exchange-session Close coverage for all 18 assets, VT and VIX inputs, plus VIX Open, checked over the evaluation interval; FX input quotes use London sessions as a conservative minimum-coverage proxy, not a global FX calendar. See observed_quote_coverage.csv. Does not certify intraday liquidity or historical warm-up completeness.',
         interpretation='Current fixed rules replay earlier holdings before the evaluation interval; historical windows inspected during research are not untouched holdout evidence.',
+        final_strategy_note='GMI-ATC = GMI-ADG plus one offensive-eligibility rule: signal-day close above its 20-day moving average (checked only on the 15-session signal dates). The 20-day window was selected on the 2015-2026 research period under both cost scenarios; the rule was introduced on 2026-10-21, so October 2026 is reported as an observation rather than independent out-of-sample evidence. GMI-ADG is the no-confirmation ablation.',
         benchmark_convention='All series are SGD total-return proxies net of 0.05% executed-notional fees. VT/STI are buy-and-hold, entered at the next close after the first replay signal, with no forced final liquidation.',
         trade_definition='FIFO units reconcile to post-fee NAV and closing weights. Recorded fees are allocated, not estimated twice. Win rate, holding period and profit per trade exclude fee-funding-only sales and open lots. Opening holdings are marked at the evaluation boundary. No ordinary closed trades means unavailable, not zero win rate.',
         sora_convention='Latest prior-value-date SORA published by return date; annual percent / 100 * actual calendar gap / 365. Publication availability improves holiday alignment relative to research shift/reindex.')
+    status['realistic_cost_convention'] = (
+        'Supplementary frozen-weight/trade-path sensitivity, not a reoptimized or independently '
+        'executed portfolio. Initial scenario NAV equals requested capital; inherited positions '
+        'are not charged again. Market/currency fees and annual tax proxies follow explore; '
+        'VT annual tax proxy is 0.36%. FX charged per foreign trade without currency netting. '
+        'Impact = min(1%, 0.10 * lagged 20-session daily volatility * sqrt(order SGD / '
+        'lagged 20-session median SGD volume)), minimum 5 observations. Order value uses '
+        'pre-cost post-return NAV. No empirical broker calibration. No realistic FIFO metrics.')
     if historical_quote_note:
         status['historical_quote_warning'] = historical_quote_note
         status['quote_coverage'] = (
@@ -238,7 +274,8 @@ def _evaluate_final_product(start='2026-10-01', end='2026-10-31', *, initial_cap
     if show_plots:
         display_charts(charts)
     return {'status': status, 'metrics': metrics, 'course_metrics': course,
-            'daily_returns': returns, 'daily_nav': nav, 'weights': weights, 'charts': charts}
+            'daily_returns': returns, 'daily_nav': nav, 'weights': weights, 'charts': charts,
+            'realistic_metrics': realistic_metrics, 'realistic_daily_returns': realistic_returns}
 
 
 def _publish_outputs(stage, output):
@@ -344,7 +381,7 @@ def cli():
         print(f'Processed {len(frame)} SORA observations; last publication: {frame["Publication Date"].max().date()}.')
         return
     if len(sys.argv) == 1 and sys.stdin.isatty():
-        print('Final GMI-ADG product | SGD | fixed one-way fee 0.05%')
+        print('Final GMI-ATC product | SGD | fixed one-way fee 0.05%')
         while True:
             try:
                 args.capital = float((input('Initial investment in SGD [1000000]: ').strip() or '1000000').replace(',', ''))
@@ -382,7 +419,9 @@ def cli():
     if status.get('partial_reason'):
         print(status['partial_reason'])
     if 'metrics' in report:
-        shown = report['metrics'][['Cumulative Return', 'Annualized Return', 'Sharpe Ratio',
+        shown = pd.concat({'Fixed 0.05%': report['metrics'],
+                           'Realistic Costs (Frozen Path)': report['realistic_metrics']},
+                          names=['Cost Scenario', 'Strategy'])[['Cumulative Return', 'Annualized Return', 'Sharpe Ratio',
             'Annualized Volatility', 'Maximum Drawdown', 'End of period net value (SGD)']].copy()
         for column in shown:
             shown[column] = shown[column].map(lambda x: f'{x:,.2f}' if column in ['Sharpe Ratio', 'End of period net value (SGD)'] else f'{x:.2%}')

@@ -161,6 +161,17 @@ def dynamic_attack_state(history, selected, vix_crisis, portfolio_drawdown):
     return qualified, breadth, float(attack_share)
 
 
+def short_trend_confirmed(history, tickers, window=None):
+    """GMI-ATC eligibility: signal-day close above its own trailing moving average.
+
+    Uses only the signal-window history (closes up to and including the signal date).
+    """
+    window = ATTACK_SHORT_MA if window is None else int(window)
+    tickers = list(tickers)
+    normalized_price = (1.0 + history[tickers]).cumprod()
+    return normalized_price.iloc[-1] > normalized_price.iloc[-window:].mean()
+
+
 def select_dynamic_attack_assets(history, selected, qualified):
     candidates = [ticker for ticker in selected if bool(qualified[ticker])]
     if not candidates:

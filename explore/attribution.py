@@ -290,6 +290,7 @@ module_sequence = [
     ('Agile balance.', results[STRATEGY_NAMES['ewma_erc']]),
     ('GMI-AHRB', results[FULLY_DYNAMIC_BUDGET_NAME]),
     ('GMI-ADG', results[DYNAMIC_ATTACK_NAME]),
+    ('GMI-ATC', results[DYNAMIC_ATTACK_H20_NAME]),
 ]
 module_rows = []
 previous_total = 0.0
@@ -1264,7 +1265,7 @@ core_category_plot.T.plot(
     color=[STRATEGY_COLORS[name] for name in core_category_contribution.index],
 )
 ax.axhline(0.0, color='black', linewidth=0.8)
-ax.set_title('Three core strategies: cumulative benefit contribution from asset classes')
+ax.set_title('Four core strategies: cumulative benefit contribution from asset classes')
 ax.set_xlabel('Asset class')
 ax.set_ylabel('Cumulative yield contribution (percentage points)')
 ax.yaxis.set_major_formatter(plt.matplotlib.ticker.PercentFormatter(1.0, decimals=2))
@@ -1286,7 +1287,7 @@ alpha_bars = ax.bar(
 ax.bar_label(alpha_bars, labels=[f'{value:.2%}' for value in alpha_values],
              padding=4, fontsize=10)
 ax.axhline(0.0, color='black', linewidth=0.8)
-ax.set_title('Three core strategies: Alpha from the 4-fact model')
+ax.set_title('Four core strategies: Alpha from the 4-fact model')
 ax.set_xlabel('Policy')
 ax.set_ylabel('Alpha')
 ax.yaxis.set_major_formatter(plt.matplotlib.ticker.PercentFormatter(1.0, decimals=2))
@@ -1296,9 +1297,9 @@ fig.tight_layout()
 plt.show()
 
 if core_friction_comparison['Maximum daily reconciliation error'].max() > 1e-10:
-    raise RuntimeError('The three core strategies are attributed horizontally to daily reconciliation errors.')
+    raise RuntimeError('The four core strategies are attributed horizontally to daily reconciliation errors.')
 if any(results[name]['returns'].loc[ATTRIBUTION_START:ATTRIBUTION_END].index.max() >= HOLDOUT_START
        for name in CORE_COMPARISON_STRATEGIES):
-    raise RuntimeError('The three core strategies are attributed horizontally to the reading of the lock test set.')
-print('The three core strategy categories of contribution, trade wear and tear, and the 4-factor Alpha horizontal attribution were completed.')
+    raise RuntimeError('The four core strategies are attributed horizontally to the reading of the lock test set.')
+print('The four core strategy categories of contribution, trade wear and tear, and the 4-factor Alpha horizontal attribution were completed.')
 

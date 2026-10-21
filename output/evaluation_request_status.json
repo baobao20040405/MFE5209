@@ -6,11 +6,11 @@
     "VT",
     "STI"
   ],
-  "requested_start": "2099-01-01",
-  "requested_end": "2099-01-31",
-  "initial_capital_sgd": 10000.0,
+  "requested_start": "2026-10-01",
+  "requested_end": "2026-10-19",
+  "initial_capital_sgd": 100.0,
   "cost": "Fixed 0.05% one-way",
   "status": "PENDING",
-  "output_dir": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209_Global_Multi_Asset_Adaptive_Allocation_English\\output",
+  "output_dir": "C:\\Users\\lenovo\\desk\\MF5209\\MFE5209\\output",
   "reason": "Requested period is unfinished. Choose partial evaluation or run after the period ends."
 }

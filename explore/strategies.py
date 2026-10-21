@@ -524,9 +524,14 @@ def select_dynamic_attack_assets(history, selected, qualified):
 
 def run_dynamic_attack_backtest(
     name=DYNAMIC_ATTACK_NAME, end_date=RESEARCH_END,
-    sora_frame=None, allow_holdout=False,
+    sora_frame=None, allow_holdout=False, short_trend_window=None,
 ):
-    """Dynamic offensive strategy; all model targets are implemented on the next transaction date after the signal is formed."""
+    """Dynamic offensive strategy; all model targets are implemented on the next transaction date after the signal is formed.
+
+    short_trend_window=None is GMI-ADG. An integer adds the GMI-ATC rule (Section 3.3.1):
+    an offensive asset must also close above its trailing moving average of that length on the
+    signal date. Core weights, trend breadth and the offensive share are not changed by the rule.
+    """
     if pd.Timestamp(end_date) >= HOLDOUT_START and not allow_holdout:
         raise RuntimeError('Dynamic offensive research backsight prohibits the reading of locked samples outside.')
     sora_frame = sora_daily_df if sora_frame is None else sora_frame
@@ -621,6 +626,8 @@ def run_dynamic_attack_backtest(
             qualified, breadth, attack_share = dynamic_attack_state(
                 history, selected, vix_crisis, portfolio_drawdown,
             )
+            if short_trend_window is not None:
+                qualified = qualified & short_trend_confirmed(history, selected, short_trend_window)
             attack_assets, _ = select_dynamic_attack_assets(
                 history, selected, qualified,
             )
@@ -716,6 +723,58 @@ dynamic_attack_audit = pd.DataFrame({
 display(dynamic_attack_audit)
 assert results[DYNAMIC_ATTACK_NAME]['returns'].index.max() < HOLDOUT_START
 print(f'Official strategy registration is complete:{DYNAMIC_ATTACK_NAME}')
+
+# 3.3.1 GMI-ATC: 20-Day Short-Trend Confirmation for the Offensive Sleeve (Final Product)
+#
+# GMI-ATC keeps every GMI-ADG rule and adds one offensive-eligibility condition: on each 15-session
+# signal date an offensive asset must also close above its own 20-day moving average (SGD price,
+# closes up to and including the signal date). Core weights, trend breadth and the 0%-30% offensive
+# share are unchanged; only which qualified assets may receive the offensive overlay changes.
+# The rule was added on 2026-10-21 after reviewing October 2026 out-of-sample results; the research
+# evidence for it is the 2015-2026 research period and the parameter grid reported in the project.
+# --- Original Notebook code unit 30 ---
+DYNAMIC_ATTACK_H20_NAME = STRATEGY_NAMES['dynamic_attack_h20']
+ATTACK_SHORT_MA = 20
+
+
+def short_trend_confirmed(history, tickers, window=ATTACK_SHORT_MA):
+    """Signal-day close above its own trailing moving average, using only the signal-window history."""
+    tickers = list(tickers)
+    normalized_price = (1.0 + history[tickers]).cumprod()
+    return normalized_price.iloc[-1] > normalized_price.iloc[-int(window):].mean()
+
+
+results[DYNAMIC_ATTACK_H20_NAME] = run_dynamic_attack_backtest(
+    DYNAMIC_ATTACK_H20_NAME, short_trend_window=ATTACK_SHORT_MA,
+)
+SUBMISSION_STRATEGY = DYNAMIC_ATTACK_H20_NAME
+strategy_returns = pd.concat(
+    [results[name]['returns'].rename(name) for name in results], axis=1
+).dropna(how='any')
+
+h20_triggers = results[DYNAMIC_ATTACK_H20_NAME]['triggers']
+adg_triggers = results[DYNAMIC_ATTACK_NAME]['triggers']
+h20_comparison = pd.DataFrame({
+    strategy_label(name): {
+        'Final date of research findings': results[name]['returns'].index.max().date(),
+        'Number of redeployments': len(results[name]['turnover']),
+        'Cumulative unilateral turnover rate': 0.5 * float(results[name]['turnover'].sum()),
+        'Average attack rate': float(results[name]['triggers']['Offensive Allocation'].mean()),
+        'Signals with at least one offensive asset': float(results[name]['triggers']['Attack assets'].ne('').mean()),
+    }
+    for name in [DYNAMIC_ATTACK_NAME, DYNAMIC_ATTACK_H20_NAME]
+})
+changed_signals = (adg_triggers['Attack assets'].reset_index(drop=True)
+                   != h20_triggers['Attack assets'].reset_index(drop=True))
+h20_comparison.loc['Signals where the offensive assets differ from GMI-ADG'] = [0.0, float(changed_signals.mean())]
+display(h20_comparison)
+for _, trigger in h20_triggers.iterrows():
+    for ticker in [t for t in trigger['Attack assets'].split(',') if t]:
+        signal_prices = prices_sgd[ticker].loc[:trigger['Signal Date']]
+        if not signal_prices.iloc[-1] > signal_prices.iloc[-ATTACK_SHORT_MA:].mean():
+            raise RuntimeError(f'GMI-ATC offensive asset {ticker} breaks the 20-day rule on {trigger["Signal Date"].date()}.')
+assert results[DYNAMIC_ATTACK_H20_NAME]['returns'].index.max() < HOLDOUT_START
+print(f'Official strategy registration is complete:{DYNAMIC_ATTACK_H20_NAME} (final submission strategy)')
 
 # 3.4 Classic monthly asset risk parities
 # --- Original Notebook code unit 31--

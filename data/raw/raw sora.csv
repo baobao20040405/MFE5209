@@ -1,7 +1,7 @@
 MAS: Financial Database - Domestic Interest Rates
 
 Domestic Interest Rates (Daily)
-Jan 2010 to Nov 2026
+Jan 2010 to Oct 2026
 
 
 SORA Value Date,,,SORA Publication Date,SORA
@@ -4266,6 +4266,8 @@ SORA Value Date,,,SORA Publication Date,SORA
 ,,13,14 Oct 2026,1.0846
 ,,14,15 Oct 2026,1.2331
 ,,15,16 Oct 2026,1.3594
+,,16,19 Oct 2026,1.3849
+,,19,20 Oct 2026,1.3243
 
 
 " After a review of the market demand and usage of MAS-administered financial benchmarks, a decision was made to discontinue the following domestic interest rates with effect from 1 January 2014: "

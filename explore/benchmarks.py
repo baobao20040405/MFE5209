@@ -70,7 +70,7 @@ for strategy_name in final_strategy_names if 'final_strategy_names' in globals()
             color=research_style, linewidth=linewidth, alpha=alpha,
             label=strategy_label(strategy_name))
 ax.axhline(0.0, color='#777777', linewidth=0.8)
-ax.set_title('All 12 strategies: study complete inter-district cumulative P&L (initial SGD 1.0 million)')
+ax.set_title(f'All {len(results)} strategies: study complete inter-district cumulative P&L (initial SGD 1.0 million)')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative P&L (SGD)')
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda value, _: f'S${value:,.2f}'))
@@ -87,7 +87,7 @@ for strategy_name in holdout_pnl_paths.columns:
     ax.plot(holdout_pnl_paths.index, holdout_pnl_paths[strategy_name], linestyle='-',
             color=color, linewidth=linewidth, alpha=alpha, label=strategy_label(strategy_name))
 ax.axhline(0.0, color='#777777', linewidth=0.8)
-ax.set_title('All 12 strategies: Accumulated P&L (initial SSD 1.0 million)')
+ax.set_title(f'All {len(results)} strategies: Accumulated P&L (initial SGD 1.0 million)')
 ax.set_xlabel('Date')
 ax.set_ylabel('Cumulative P&L (SGD)')
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda value, _: f'S${value:,.2f}'))
@@ -405,7 +405,7 @@ MARKET_BENCHMARK_NAMES = {
     'ES3.SI': 'Singapore Stock Market (ES3.SI)',
     'VT': 'Global stock market (VT)',
 }
-SUBMISSION_STRATEGY = DYNAMIC_ATTACK_NAME
+SUBMISSION_STRATEGY = DYNAMIC_ATTACK_H20_NAME
 
 
 def annualized_compound_return(return_series):
@@ -694,7 +694,7 @@ print('Market benchmarking is complete: Alpha/Beta has deducted SORA, and all re
 #
 # This section is the only formal consolidated portal. The table of indicators, the complete study of the cumulative inter-area income map, the retraction map and the cumulative inter-validation income map are all read out and therefore contain the same 12 strategies. The previous drawing section defines only functions and does not produce another set of formal results.
 # --- Original Notebook code module 75-
-FINAL_EXPECTED_STRATEGY_COUNT = 12
+FINAL_EXPECTED_STRATEGY_COUNT = 13
 final_strategy_names = list(results.keys())
 if len(final_strategy_names) != FINAL_EXPECTED_STRATEGY_COUNT:
     raise RuntimeError(
@@ -775,7 +775,7 @@ final_oos_cumulative = plot_all_strategy_oos(strategy_returns, final_strategy_co
 assert list(final_cumulative.columns) == final_strategy_names
 assert list(final_drawdowns.columns) == final_strategy_names
 assert list(final_oos_cumulative.columns) == final_strategy_names
-print('Uniform checks were carried out: a table of indicators, a map of cumulative gains, a map of fallbacks and a map of certification zones contained the same set of 12 formal strategies.')
+print(f'Uniform checks were carried out: a table of indicators, a map of cumulative gains, a map of fallbacks and a map of certification zones contained the same set of {len(results)} formal strategies.')
 
 # 6.5 Strategies to defeat markets: a statistical test
 #

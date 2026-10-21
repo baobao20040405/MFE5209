@@ -146,9 +146,15 @@ The calibre does not give new weights the benefit of signal dayst, but it is not
 
 def run_dynamic_attack_backtest(
     name=None, end_date=None,
-    sora_frame=None, allow_holdout=False,
+    sora_frame=None, allow_holdout=False, short_trend_window=None,
 ):
-    """Dynamic offensive strategy; all model targets are implemented on the next transaction date after the signal is formed."""
+    """Dynamic offensive strategy; all model targets are implemented on the next transaction date after the signal is formed.
+
+    short_trend_window=None reproduces GMI-ADG exactly. An integer window adds the
+    GMI-ATC rule: an offensive asset must also close above its trailing moving
+    average of that length on the signal date. Core weights, trend breadth and the
+    offensive share are unchanged by this rule.
+    """
     name = DYNAMIC_ATTACK_NAME if name is None else name
     end_date = RESEARCH_END if end_date is None else pd.Timestamp(end_date)
     if end_date >= HOLDOUT_START and not allow_holdout:
@@ -245,6 +251,8 @@ def run_dynamic_attack_backtest(
             qualified, breadth, attack_share = dynamic_attack_state(
                 history, selected, vix_crisis, portfolio_drawdown,
             )
+            if short_trend_window is not None:
+                qualified = qualified & short_trend_confirmed(history, selected, short_trend_window)
             attack_assets, _ = select_dynamic_attack_assets(
                 history, selected, qualified,
             )
@@ -316,6 +324,14 @@ def run_dynamic_attack_backtest(
     if not np.allclose(result['weights'].sum(axis=1), 1.0, atol=1e-10):
         raise RuntimeError('The implementation weight of the dynamic offensive strategy was not maintained at 100 per cent.')
     return result
+
+
+def run_dynamic_attack_h20_backtest(end_date=None, sora_frame=None, allow_holdout=False):
+    """Final product GMI-ATC: GMI-ADG with the 20-day short-trend confirmation."""
+    return run_dynamic_attack_backtest(
+        name=DYNAMIC_ATTACK_H20_NAME, end_date=end_date, sora_frame=sora_frame,
+        allow_holdout=allow_holdout, short_trend_window=ATTACK_SHORT_MA,
+    )
 
 
 if __name__ == '__main__':

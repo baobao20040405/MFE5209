@@ -26,14 +26,14 @@ def asset_class_weights(weights, metadata):
 
 
 def plot_comparison(returns, weights, metadata, capital, output_dir, colors,
-                    class_colors, *, partial=False):
+                    class_colors, *, partial=False, cost_scenario='Fixed 0.05%'):
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     base = returns.index[0] - pd.Timedelta(days=1)
     cumulative = pd.concat([pd.DataFrame(0.0, index=[base], columns=returns.columns),
                             (1 + returns).cumprod() - 1])
     wealth = (1 + cumulative) * capital
-    suffix = ' (Partial)' if partial else ''
+    suffix = f' | {cost_scenario}' + (' (Partial)' if partial else '')
     period = f'{returns.index[0].date()} to {returns.index[-1].date()}'
     charts = {}
     for key, title, values, ylabel in [
@@ -46,13 +46,16 @@ def plot_comparison(returns, weights, metadata, capital, output_dir, colors,
         ax.set(title=f'Final Product and Benchmarks: {title}{suffix}\n{period}', xlabel='Date', ylabel=ylabel)
         ax.yaxis.set_major_formatter(PercentFormatter(1, decimals=2) if key == 'growth' else StrMethodFormatter('{x:,.2f}'))
         _dates(ax, values.index)
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=4, frameon=False)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), ncol=max(4, len(values.columns)), frameon=False)
         fig.tight_layout()
         path = out / f'{key}.png'
         fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
         charts[key] = str(path)
     drawdown = wealth / wealth.cummax() - 1
-    fig, axes = plt.subplots(2, 2, figsize=(13, 8), sharey=True)
+    rows = int(np.ceil(len(returns.columns) / 2))
+    fig, axes = plt.subplots(rows, 2, figsize=(13, 4 * rows), sharey=True, squeeze=False)
+    for ax in axes.flat[len(returns.columns):]:
+        ax.set_visible(False)
     for ax, name in zip(axes.flat, returns.columns):
         ax.fill_between(drawdown.index, drawdown[name], 0, color=colors[name], linewidth=0)
         ax.set(title=name, xlabel='Date', ylabel='Drawdown', ylim=(min(-0.001, float(drawdown.min().min()) * 1.1), 0))
@@ -64,7 +67,10 @@ def plot_comparison(returns, weights, metadata, capital, output_dir, colors,
     fig.savefig(path, dpi=180, bbox_inches='tight'); plt.close(fig)
     charts['drawdown'] = str(path)
     grouped = {name: asset_class_weights(frame, metadata) for name, frame in weights.items()}
-    fig, axes = plt.subplots(2, 2, figsize=(13, 8), sharey=True)
+    rows = int(np.ceil(len(grouped) / 2))
+    fig, axes = plt.subplots(rows, 2, figsize=(13, 4 * rows), sharey=True, squeeze=False)
+    for ax in axes.flat[len(grouped):]:
+        ax.set_visible(False)
     for ax, (name, frame) in zip(axes.flat, grouped.items()):
         labels = list(frame.columns)
         ax.stackplot(frame.index, *[frame[c].clip(lower=0).to_numpy() for c in labels],

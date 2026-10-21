@@ -1,4 +1,5 @@
 Strategy,One-Way Fee,Convention
+GMI-ATC,0.0005,Fee times absolute executed-notional weight; no fee without trading.
 GMI-ADG,0.0005,Fee times absolute executed-notional weight; no fee without trading.
 GMA-EW,0.0005,Fee times absolute executed-notional weight; no fee without trading.
 VT,0.0005,Fee times absolute executed-notional weight; no fee without trading.

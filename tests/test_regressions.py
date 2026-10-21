@@ -102,6 +102,51 @@ class RegressionTests(unittest.TestCase):
         shorter = self.context['run_dynamic_attack_backtest'](end_date='2026-07-31', sora_frame=self.sora, allow_holdout=True)
         np.testing.assert_allclose(shorter['returns'], result['returns'].loc[shorter['returns'].index], atol=1e-12)
 
+    def test_h20_final_product_rules_and_no_lookahead(self):
+        """GMI-ATC: same accounting as GMI-ADG, MA20 rule respected, no future data used."""
+        run = self.context['run_dynamic_attack_h20_backtest']
+        result = run(end_date='2026-10-16', sora_frame=self.sora, allow_holdout=True)
+        before = result['pre_return_weights']
+        gross = (before * result['instrument_returns']).sum(axis=1) + (1 - before.sum(axis=1)) * result['risk_free_daily']
+        fee = result['transaction_cost'].reindex(gross.index, fill_value=0)
+        np.testing.assert_allclose(result['returns'], (1 + gross) * (1 - fee) - 1, atol=1e-12)
+        triggers = result['triggers']
+        self.assertTrue((triggers['Signal Date'] < triggers['Execution Date']).all())
+        prices = self.context['prices_sgd']
+        window = self.context['ATTACK_SHORT_MA']
+        self.assertEqual(window, 20)
+        for _, row in triggers.iterrows():
+            for ticker in [t for t in row['Attack assets'].split(',') if t]:
+                history = prices[ticker].loc[:row['Signal Date']]
+                self.assertGreater(history.iloc[-1], history.iloc[-window:].mean())
+        shorter = run(end_date='2026-07-31', sora_frame=self.sora, allow_holdout=True)
+        np.testing.assert_allclose(shorter['returns'], result['returns'].loc[shorter['returns'].index], atol=1e-12)
+        # Replace every return/VIX observation after the cutoff with noise: earlier output must not move.
+        cutoff = pd.Timestamp('2024-08-01')
+        context = self.context
+        saved = {key: context[key] for key in ['returns', 'portfolio_returns_for_backtest', 'vix_open_daily']}
+        try:
+            rng = np.random.default_rng(0)
+            for key in ['returns', 'portfolio_returns_for_backtest']:
+                frame = saved[key].copy()
+                late = frame.index > cutoff
+                frame.loc[late] = rng.normal(0, 0.03, (late.sum(), frame.shape[1]))
+                context[key] = frame
+            vix = saved['vix_open_daily'].copy(); vix.loc[vix.index > cutoff] = 60.0
+            context['vix_open_daily'] = vix
+            perturbed = run(end_date='2026-10-16', sora_frame=self.sora, allow_holdout=True)
+        finally:
+            context.update(saved)
+        np.testing.assert_array_equal(perturbed['returns'].loc[:cutoff].values, result['returns'].loc[:cutoff].values)
+        np.testing.assert_array_equal(perturbed['end_of_day_weights'].loc[:cutoff].values,
+                                      result['end_of_day_weights'].loc[:cutoff].values)
+
+    def test_h20_option_off_reproduces_gmi_adg(self):
+        base = self.context['run_dynamic_attack_backtest'](end_date='2026-10-16', sora_frame=self.sora, allow_holdout=True)
+        explicit = self.context['run_dynamic_attack_backtest'](end_date='2026-10-16', sora_frame=self.sora,
+                                                              allow_holdout=True, short_trend_window=None)
+        np.testing.assert_array_equal(base['returns'].values, explicit['returns'].values)
+
     def test_no_price_export_still_rejects_stale_completion(self):
         context = dict(self.context)
         context['raw'] = context['raw'].copy()

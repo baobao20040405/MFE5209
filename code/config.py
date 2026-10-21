@@ -105,6 +105,12 @@ CHECK_INTERVAL = 15
 STRATEGY_NAMES = {key: STRATEGY_NAMES[key] for key in ('dynamic_attack', 'equal_weight')}
 STRATEGY_COLORS = {STRATEGY_NAMES[key]: STRATEGY_COLORS[STRATEGY_NAMES[key]] for key in STRATEGY_NAMES}
 DYNAMIC_ATTACK_NAME = STRATEGY_NAMES['dynamic_attack']
+# Final product (added 2026-10-21): GMI-ADG plus a 20-day short-trend confirmation
+# for offensive-sleeve eligibility. GMI-ADG (no confirmation) is kept as the ablation.
+STRATEGY_NAMES['dynamic_attack_h20'] = 'Global Momentum Adaptive Trend-Confirmed Allocation (GMI-ATC)'
+STRATEGY_COLORS[STRATEGY_NAMES['dynamic_attack_h20']] = '#C51B7D'
+DYNAMIC_ATTACK_H20_NAME = STRATEGY_NAMES['dynamic_attack_h20']
+ATTACK_SHORT_MA = 20
 DYNAMIC_ATTACK_MAX_SHARE = 0.30
 DYNAMIC_ATTACK_VOL_SHOCK_MULTIPLIER = 1.50
 DYNAMIC_ATTACK_NO_TRADE_BAND = 0.02

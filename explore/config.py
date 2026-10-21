@@ -85,6 +85,7 @@ STRATEGY_NAMES = {
     'fixed_attack': 'Global Momentum Fixed Offensive Allocation (GMI-FOA)',
     'dynamic_attack': 'Global Momentum Adaptive Defense and Growth (GMI-ADG)',
     'monthly_erc': 'Global Multi-Asset Classic Risk Parity (GMA-CRP)',
+    'dynamic_attack_h20': 'Global Momentum Adaptive Trend-Confirmed Allocation (GMI-ATC)',
 }
 STRATEGY_LABELS = {
     STRATEGY_NAMES['inverse_vol']: 'GMI-IV',
@@ -99,6 +100,7 @@ STRATEGY_LABELS = {
     STRATEGY_NAMES['fixed_attack']: 'GMI-FOA',
     STRATEGY_NAMES['dynamic_attack']: 'GMI-ADG',
     STRATEGY_NAMES['monthly_erc']: 'GMA-CRP',
+    STRATEGY_NAMES['dynamic_attack_h20']: 'GMI-ATC',
 }
 STRATEGY_COLORS = {
     STRATEGY_NAMES['inverse_vol']: '#45A3B8',
@@ -113,6 +115,7 @@ STRATEGY_COLORS = {
     STRATEGY_NAMES['fixed_attack']: '#E6A23C',
     STRATEGY_NAMES['dynamic_attack']: '#9D2235',
     STRATEGY_NAMES['monthly_erc']: '#B07D4F',
+    STRATEGY_NAMES['dynamic_attack_h20']: '#C51B7D',
 }
 MARKET_BENCHMARK_COLORS = {
     'ES3.SI': '#287271',

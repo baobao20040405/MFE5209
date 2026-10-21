@@ -212,6 +212,7 @@ comparison = comparison.rename(columns={
     FULLY_DYNAMIC_BUDGET_NAME: 'Full Dynamic Double Layer EWMA: Selection Ratio',
     CORE_ATTACK_NAME: 'Fixed 70 + 30 per cent offensive: selection ratio',
     DYNAMIC_ATTACK_NAME: 'Dynamic 0-30% offensive: selected ratio',
+    DYNAMIC_ATTACK_H20_NAME: 'Dynamic 0-30% offensive + 20-day confirmation: selected ratio',
 })
 comparison = comparison.map(lambda x: f'{x:.1%}')
 display(comparison)
@@ -224,6 +225,7 @@ current_comparison = current_comparison.rename(columns={
     FULLY_DYNAMIC_BUDGET_NAME: 'Full Dynamic Double Layer EWMA: Current weight',
     CORE_ATTACK_NAME: 'Fixed 70 + 30% offensive: current weight',
     DYNAMIC_ATTACK_NAME: 'Dynamic 0-30% offensive: current weight',
+    DYNAMIC_ATTACK_H20_NAME: 'Dynamic 0-30% offensive + 20-day confirmation: current weight',
 })
 current_comparison = current_comparison.loc[current_comparison.max(axis=1).sort_values(ascending=False).index]
 current_comparison = current_comparison.map(lambda x: f'{x:.2%}')
@@ -576,13 +578,17 @@ holdout_results.update({
         DYNAMIC_ATTACK_NAME, end_date=HOLDOUT_END,
         sora_frame=sora_holdout_df, allow_holdout=True,
     ),
+    DYNAMIC_ATTACK_H20_NAME: run_dynamic_attack_backtest(
+        DYNAMIC_ATTACK_H20_NAME, end_date=HOLDOUT_END,
+        sora_frame=sora_holdout_df, allow_holdout=True, short_trend_window=ATTACK_SHORT_MA,
+    ),
     STATIC_CLASSIC_NAME: run_all_asset_monthly_backtest(
         STATIC_CLASSIC_NAME, target_all_asset_classic, end_date=HOLDOUT_END,
         sora_frame=sora_holdout_df, allow_holdout=True,
     ),})
-required_holdout_strategies = {FULLY_DYNAMIC_BUDGET_NAME, CORE_ATTACK_NAME, DYNAMIC_ATTACK_NAME}
+required_holdout_strategies = {FULLY_DYNAMIC_BUDGET_NAME, CORE_ATTACK_NAME, DYNAMIC_ATTACK_NAME, DYNAMIC_ATTACK_H20_NAME}
 if not required_holdout_strategies.issubset(holdout_results):
-    raise RuntimeError('The three core product strategies were not all tested outside the locked sample.')
+    raise RuntimeError('The four core product strategies were not all tested outside the locked sample.')
 
 actual_holdout_end = min(
     HOLDOUT_END,
@@ -1007,7 +1013,9 @@ stress_strategy_selection = pd.DataFrame({
     ],
     'Reason for inclusion': [
         'Core risk budget strategy' if name == FULLY_DYNAMIC_BUDGET_NAME
-        else ('Fixed attack sleeves' if name == CORE_ATTACK_NAME else 'Dynamic attack sleeves.')
+        else ('Fixed attack sleeves' if name == CORE_ATTACK_NAME
+              else ('Dynamic attack sleeve + 20-day confirmation (final)' if name == DYNAMIC_ATTACK_H20_NAME
+                    else 'Dynamic attack sleeves.'))
         for name in SIMULATED_STRESS_STRATEGIES
     ],
 }).set_index('Policy')
@@ -1109,7 +1117,7 @@ hypothetical_plot = hypothetical_plot.rename(index={
 stress_colors = [STRATEGY_COLORS[name] for name in SIMULATED_STRESS_STRATEGIES]
 ax = hypothetical_plot.plot(kind='bar', figsize=(15, 8.2), width=0.66, color=stress_colors)
 ax.axhline(0.0, color='black', linewidth=0.8)
-ax.set_title('Assumptions of combined impact results (current recorded weights) for the three categories of comparators')
+ax.set_title('Assumptions of combined impact results (current recorded weights) for the four core comparators')
 ax.set_xlabel('Simulation')
 ax.set_ylabel('Combination of one month of impact gains')
 ax.yaxis.set_major_formatter(plt.matplotlib.ticker.PercentFormatter(1.0, decimals=2))

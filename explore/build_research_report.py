@@ -458,15 +458,15 @@ def main():
     add_text(doc, "The strategy is checked every 15 trading days. If Top10 changes in membership, complete replacement is carried out; if membership does not change, only the target difference of 50% is implemented and 2% is used to filter small adjustments without trading belts. The return of the signal and weight calculated using the proceeds of the previous day is measured to ensure that the proceeds of implementation are well received.")
     add_equation(doc, "rₜᴾ = wₜ₋₁ᵀ rₜ − Costₜ + Cashₜ", "(12)")
     add_text(doc, "Formally compare the use of a unilateral 0.05 per cent cost to ensure that all strategic calibres are consistent. An independent copy of the real cost is created at the same time, but it is not transposed to reduce the internality between economic assumptions and strategic choices.")
-    add_figure(doc, "cell_035_img_11_CORE_COMPARISON_STRATEGIES____.png", "Figure 2: Changes in the weight of larger categories of assets protected by inspiration")
+    add_figure(doc, "cell_037_img_11_CORE_COMPARISON_STRATEGIES____.png", "Figure 2: Changes in the weight of larger categories of assets protected by inspiration")
     add_text(doc, "The figure shows that group weights are not static 40/35/15/5/5, but rather change in trend rankings, fluctuations and the combined effect of offensive cylinders. This is the core difference between this strategy and the traditional static all-weather.", first_line=True)
     doc.add_page_break()
 
     add_section_heading(doc, "2.7 Optimized path from baseline to final strategy", 2)
     add_text(doc, "To avoid displaying only the best results, the study retained 12 formal strategies, including equal rights, full-asset classic ERC, Top10 inverse fluctuations, classic/ERC/EWMA/downline/GARCH risk parity, single-layer dynamic budget, static and full-dynamic double-layer budget, and two offensive combinations. These intermediate strategies are used to identify “what levels of proceeds come from” rather than simply cross-section selection of Sharp's top.")
-    add_figure(doc, "cell_075_img_01_FINAL_EXPECTED_STRATEGY_COUNT___12.png", "Figure 3:12 Cumulative gains from formal strategies and market benchmarks")
+    add_figure(doc, "cell_077_img_01_FINAL_EXPECTED_STRATEGY_COUNT___13.png", "Figure 3:12 Cumulative gains from formal strategies and market benchmarks")
     add_text(doc, "The cumulative proceeds of an attack are the highest, but not the end value alone. Reactions, hand changes, forward annual stability and realistic costs need to be examined together.")
-    add_figure(doc, "cell_075_img_02_FINAL_EXPECTED_STRATEGY_COUNT___12.png", "Figure 4: 12 official policy retreat curves")
+    add_figure(doc, "cell_077_img_02_FINAL_EXPECTED_STRATEGY_COUNT___13.png", "Figure 4: 12 official policy retreat curves")
     doc.add_page_break()
 
     # Part 3
@@ -487,7 +487,7 @@ def main():
         ["ZXQ0XZSI Channel Times (SGD)", "190.93%", "9.95%", "12.85%", "0.70", "-33.77%"],
     ], font_size=8.4)
     add_text(doc, "Actual differential costs use sub-market commissions, branch exchange costs, sub-market price differentials/slip-point agents, square root impact models that lag behind ADV and volatility rates, and asset-grade annual withholding tax agents. It is a conservative scenario, and it does not mean that every history has a real deal.")
-    add_figure(doc, "cell_041_img_01_REALISTIC_SCENARIO_NAMES____.png", "Figure 5: Cumulative gains under fixed-cost versus real-time costs")
+    add_figure(doc, "cell_043_img_01_REALISTIC_SCENARIO_NAMES____.png", "Figure 5: Cumulative gains under fixed-cost versus real-time costs")
     doc.add_page_break()
 
     add_section_heading(doc, "3.3 Inline, forward validation and lock observation of samples", 2)
@@ -496,7 +496,7 @@ def main():
         ["Forward authentication 2025-01-01 to 2026-07-31", "37.08%", "21.39%", "11.51%", "1.61", "-8.02%"],
         ["Targeted observation 2026-08-01 to 2026-10-01", "1.72%", "10.23%", "6.62%", "1.32", "-1.91%"],
     ], font_size=9)
-    add_figure(doc, "cell_075_img_03_FINAL_EXPECTED_STRATEGY_COUNT___12.png", "Figure 6: Cumulative proceeds forward to certification area")
+    add_figure(doc, "cell_077_img_03_FINAL_EXPECTED_STRATEGY_COUNT___13.png", "Figure 6: Cumulative proceeds forward to certification area")
     add_key_box(doc, "Lock set to interpret boundary", [
         "There are only 44 trading days in the lockout and Alpha statistics are not effective enough to support long-term conclusions.",
         "If the rules are changed after looking at the zone, the area is no longer a real sample and needs to be clearly disclosed in the report.",
@@ -522,7 +522,7 @@ def main():
         ["Impact of the 2020 epidemic", "+0.79%", "-5.17%", "-16.84%", "-17.87%"],
         ["2022 stock, double-kill.", "-0.43%", "-5.18%", "-12.78%", "-15.66%"],
     ], font_size=8.8)
-    add_figure(doc, "cell_043_img_01_stress_windows____.png", "Figure 7: Cumulative benefits and historical stress phases of the core product strategy")
+    add_figure(doc, "cell_045_img_01_stress_windows____.png", "Figure 7: Cumulative benefits and historical stress phases of the core product strategy")
     add_text(doc, "During the 2020 epidemic, the withdrawal of the elitist offensive was clearly less than the equivalent of the equity benchmark; in the 2022 stock double-kill, trend screening and dynamic risk budgets reduced exposure to the combined decline in traditional bonds and equities. However, strategies may still suffer losses in the rapid reversal of trends and leapfrogging.")
     add_section_heading(doc, "4.2 Assumptions of combined shock", 2)
     add_table(doc, ["Scenario", "GMI-AHRB", "GMI-FOA", "GMI-ADG"], [
@@ -534,12 +534,12 @@ def main():
     ], font_size=8.7)
     add_text(doc, "Assuming that the shock directly affects the real hold at the end of 2026-07-31, it is a \" hold-up loss immediately\" rather than allowing the model to rebalance the path. In the global liquidity crisis, the three strategic losses were close to 27 per cent, suggesting that dynamic budgets could not eliminate the risk of flight and simultaneous deleveraging.")
     add_section_heading(doc, "4.3 Parameter Neighbourly stability", 2)
-    add_figure(doc, "cell_083_img_01_parameter_tests____.png", "Figure 8: Top N, momentum window, EWMA λ sensitivity to frequency of inspection")
+    add_figure(doc, "cell_085_img_01_parameter_tests____.png", "Figure 8: Top N, momentum window, EWMA λ sensitivity to frequency of inspection")
     add_text(doc, "Parameter tests target the base EWMA-ERC path rather than the final policy of repeated adjustments. Top N = 8–10, Dynamic Window 189–231 days, λ = 0.94–0.97 and 15 days of inspection are relatively acceptable; however Top N from 10 to 6 increases in returns will be maximized to -23.57 per cent, which is not consistent with product risk positioning.")
     doc.add_page_break()
 
     add_section_heading(doc, "4.4 Walker-Forward and Multiple Tests", 2)
-    add_figure(doc, "cell_087_img_01_WALK_FORWARD_STRATEGIES____.png", "Figure 9: Freezing rules Walker-Forward ratio for each full year")
+    add_figure(doc, "cell_089_img_01_WALK_FORWARD_STRATEGIES____.png", "Figure 9: Freezing rules Walker-Forward ratio for each full year")
     add_table(doc, ["Policy", "Medium annual Sharp", "Min", "Positive annual rate of return", "Annual ratio of Sharpes above parity"], [
         ["GMI-AHRB", "1.48", "-0.66", "80%", "60%"],
         ["GMI-ADG", "1.23", "-0.97", "80%", "60%"],
@@ -565,7 +565,7 @@ def main():
     # Part 5
     add_section_heading(doc, "Part V Performance attribution", 1)
     add_section_heading(doc, "5.1 Contribution of asset and class proceeds", 2)
-    add_figure(doc, "cell_095_img_01_linked_asset_contribution___geometrically_link_contributions_.png", "Figure 10: Invigorating against cumulative revenue contribution (by large asset class)")
+    add_figure(doc, "cell_097_img_01_linked_asset_contribution___geometrically_link_contributions_.png", "Figure 10: Invigorating against cumulative revenue contribution (by large asset class)")
     add_table(doc, ["Asset Class", "Cumulative proceeds contribution"], [
         ["Equities", "+162.58 percentage points"], ["Crypto", "+149.62 percentage points"],
         ["Commodities", "+129.50 percentage points"], ["FX", "+10.50 percentage points"],
@@ -586,7 +586,7 @@ def main():
 
     add_section_heading(doc, "5.3 Contribution to and residual of seed proceeds Alpha", 2)
     add_text(doc, "Simplified four-factor model uses global equities, medium-term national debt, commodities and United States dollars and receives annualized remnants of Alpha 11.47 per cent. The model, however, omits gold, bitcoin, regional stock markets, multi-asset momentum and dynamic budget increases, thus exposing observable strategies as Alpha.")
-    add_figure(doc, "cell_105_img_01_def_expanded_factor_performance_attribution_result__factor_frame__rf__start__end.png", "Figure 12: Contribution of the cumulative benefits of the extended factor")
+    add_figure(doc, "cell_107_img_01_def_expanded_factor_performance_attribution_result__factor_frame__rf__start__end.png", "Figure 12: Contribution of the cumulative benefits of the extended factor")
     add_table(doc, ["Attribution", "Beta/factor", "Annual computational contributions", "Cumulative contribution", "HAC t", "p Value"], [
         ["Global equities", "0.30", "+3.15%", "+91.59%", "9.22", "0.00"],
         ["Gold", "0.09", "+0.92%", "+30.47%", "8.27", "0.00"],
@@ -598,7 +598,7 @@ def main():
     ], font_size=8.2)
     add_text(doc, "R2 for the extended model is 0.87, adjusted R2 is 0.86, the standardized condition is 4.84 and the maximum factor is 0.76. The residual Alpha dropped from 11.47 per cent to 2.85 per cent as a result of the factor expansion, indicating that this strategy is more accurately positioned as a “multi-asset Beta + system momentum + dynamic risk budget + limited residual Alpha” rather than a pure Alpha strategy.")
     add_section_heading(doc, "5.4 Trade losses from gross to net proceeds", 2)
-    add_figure(doc, "cell_101_img_01_realistic_attribution_result___realistic_submission_result.png", "Figure 13: Gross proceeds under realistic differential costs to net gains waterfalls Figure")
+    add_figure(doc, "cell_103_img_01_realistic_attribution_result___realistic_submission_result.png", "Figure 13: Gross proceeds under realistic differential costs to net gains waterfalls Figure")
     add_table(doc, ["Item", "Cumulative proceeds contribution"], [
         ["Gross proceeds from assets", "+408.19 percentage points"],
         ["Commissions and transaction costs", "- 7.78 percentage points"],
